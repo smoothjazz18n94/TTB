@@ -1,0 +1,322 @@
+/* =========================
+   🔄 RESET
+========================= */
+* {
+  margin: 0;
+  padding: 0;
+  box-sizing: border-box;
+}
+
+/* =========================
+   🌍 BODY
+========================= */
+body {
+  font-family: "Segoe UI", Arial, sans-serif;
+  background: #f4f7fb;
+}
+
+/* =========================
+   📱 APP CONTAINER
+========================= */
+.app {
+  max-width: 420px;
+  margin: auto;
+  padding-bottom: 90px;
+  animation: fadeIn 0.5s ease;
+}
+
+/* =========================
+   🟦 HEADER (FIXED VISIBILITY)
+========================= */
+.header {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  background: linear-gradient(135deg, #2563eb, #16a34a);
+  color: white;
+  padding: 25px 20px 60px;
+  border-radius: 0 0 25px 25px;
+}
+
+.header h2 {
+  font-size: 20px;
+}
+
+.header p {
+  font-size: 13px;
+  opacity: 0.9;
+}
+
+/* LOGOUT */
+.logout-btn {
+  background: white;
+  color: #2563eb;
+  border: none;
+  padding: 6px 12px;
+  border-radius: 8px;
+  cursor: pointer;
+}
+
+/* =========================
+   💳 BALANCE CARD (FIX OVERLAP)
+========================= */
+.balance-card {
+  background: white;
+  margin: -40px 15px 20px;
+  padding: 20px;
+  border-radius: 18px;
+  text-align: center;
+  box-shadow: 0 10px 30px rgba(0,0,0,0.1);
+}
+
+.balance-card h1 {
+  font-size: 32px;
+  margin-top: 10px;
+  color: #111;
+}
+
+/* =========================
+   ⚡ ACTION BUTTONS
+========================= */
+.actions {
+  display: flex;
+  gap: 10px;
+  padding: 0 15px;
+}
+
+.actions button {
+  flex: 1;
+  padding: 12px;
+  border: none;
+  border-radius: 12px;
+  background: #2563eb;
+  color: white;
+  font-weight: 600;
+  cursor: pointer;
+  transition: 0.2s;
+}
+
+.actions button:hover {
+  background: #1d4ed8;
+  transform: scale(1.03);
+}
+
+/* =========================
+   📦 CARD
+========================= */
+.card {
+  background: white;
+  margin: 15px;
+  padding: 15px;
+  border-radius: 18px;
+  box-shadow: 0 5px 20px rgba(0,0,0,0.05);
+  transition: 0.25s;
+}
+
+.card:hover {
+  transform: translateY(-3px);
+}
+
+/* =========================
+   📝 FORM
+========================= */
+.form-group {
+  margin-bottom: 15px;
+}
+
+label {
+  font-size: 13px;
+  color: #666;
+}
+
+input {
+  width: 100%;
+  padding: 10px;
+  border-radius: 10px;
+  border: 1px solid #ddd;
+  margin-top: 5px;
+  margin-bottom: 8px;
+}
+
+/* =========================
+   📜 HISTORY
+========================= */
+#historyList {
+  list-style: none;
+}
+
+#historyList li {
+  display: flex;
+  justify-content: space-between;
+  padding: 10px 0;
+  border-bottom: 1px solid #eee;
+  font-size: 14px;
+}
+
+/* COLORS */
+.deposit {
+  color: #16a34a;
+  font-weight: bold;
+}
+
+.transfer {
+  color: #dc2626;
+  font-weight: bold;
+}
+
+/* =========================
+   📊 CHART
+========================= */
+canvas {
+  width: 100% !important;
+  height: 220px !important;
+}
+
+/* =========================
+   📱 BOTTOM NAV
+========================= */
+.bottom-nav {
+  position: fixed;
+  bottom: 0;
+  left: 0;
+  right: 0;
+  max-width: 420px;
+  margin: auto;
+  background: white;
+  display: flex;
+  justify-content: space-around;
+  padding: 12px 0;
+  border-top: 1px solid #ddd;
+}
+
+.bottom-nav button {
+  background: none;
+  border: none;
+  font-size: 18px;
+  color: #555;
+}
+
+.bottom-nav button:hover {
+  color: #2563eb;
+}
+
+/* =========================
+   🌙 DARK MODE
+========================= */
+body.dark {
+  background: #0f172a;
+  color: white;
+}
+
+body.dark .card,
+body.dark .balance-card {
+  background: #1e293b;
+  color: white;
+}
+
+body.dark input {
+  background: #334155;
+  color: white;
+  border: none;
+}
+
+/* =========================
+   ✨ ANIMATION
+========================= */
+@keyframes fadeIn {
+  from {
+    opacity: 0;
+    transform: translateY(10px);
+  }
+  to {
+    opacity: 1;
+    transform: translateY(0);
+  }
+}
+
+.bank-card {
+  margin: -50px 15px 20px;
+  padding: 20px;
+  border-radius: 20px;
+  color: white;
+  background: linear-gradient(135deg, #2563eb, #16a34a);
+  box-shadow: 0 10px 30px rgba(0,0,0,0.2);
+}
+
+.card-top {
+  display: flex;
+  justify-content: space-between;
+  margin-bottom: 20px;
+}
+
+.card-number {
+  font-size: 18px;
+  letter-spacing: 2px;
+  margin-bottom: 20px;
+}
+
+.card-bottom {
+  display: flex;
+  justify-content: space-between;
+  font-size: 14px;
+}
+
+
+/* 💳 BANK CARD */
+.bank-card {
+  margin: -50px 15px 20px;
+  padding: 20px;
+  border-radius: 20px;
+  color: white;
+  background: linear-gradient(135deg, #2563eb, #16a34a);
+  box-shadow: 0 10px 30px rgba(0,0,0,0.2);
+}
+
+.card-number {
+  font-size: 18px;
+  letter-spacing: 2px;
+  margin: 20px 0;
+}
+
+.card-bottom {
+  display: flex;
+  justify-content: space-between;
+}
+
+/* 🔒 LOCK SCREEN */
+.lock-screen {
+  position: fixed;
+  inset: 0;
+  background: #111;
+  color: white;
+  display: none;
+  flex-direction: column;
+  justify-content: center;
+  align-items: center;
+}
+
+.lock-screen input {
+  padding: 10px;
+  margin: 10px;
+  text-align: center;
+  font-size: 20px;
+}
+
+/* 🌙 DARK MODE */
+body.dark {
+  background: #0f172a;
+  color: white;
+}
+
+body.dark .card {
+  background: #1e293b;
+}
+
+/* 🔥 ANIMATIONS */
+button {
+  transition: 0.2s;
+}
+
+button:hover {
+  transform: scale(1.05);
+}
