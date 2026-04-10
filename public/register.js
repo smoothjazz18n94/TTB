@@ -1,17 +1,14 @@
-console.log("JS LOADED");
+const BASE_URL = "https://ttb-x042.onrender.com";
 
-const registerForm = document.getElementById("registerForm");
-const message = document.getElementById("registerMessage");
-
-registerForm.addEventListener("submit", async (e) => {
+document.getElementById("registerForm").addEventListener("submit", async (e) => {
   e.preventDefault();
 
-  const name = registerForm.name.value;
-  const email = registerForm.email.value;
-  const password = registerForm.password.value;
+  const name = document.getElementById("name").value;
+  const email = document.getElementById("email").value;
+  const password = document.getElementById("password").value;
 
   try {
-    const res = await fetch("https://bank-backend.onrender.com", {
+    const res = await fetch(`${BASE_URL}/api/auth/register`, {
       method: "POST",
       headers: {
         "Content-Type": "application/json",
@@ -20,29 +17,25 @@ registerForm.addEventListener("submit", async (e) => {
     });
 
     const data = await res.json();
-
-    // 🔍 Debug logs
-  console.log("STATUS:", res.status);
-console.log("FULL RESPONSE:", JSON.stringify(data, null, 2));
+    console.log("REGISTER:", data);
 
     if (res.ok) {
-      message.style.color = "green";
-      message.textContent = "✅ Registration successful!";
-      registerForm.reset();
+      document.getElementById("registerMessage").textContent =
+        "Registration successful 🎉";
+
+      // redirect after short delay
+      setTimeout(() => {
+        window.location.href = "login.html";
+      }, 1500);
+
     } else {
-      message.style.color = "red";
-      message.textContent =
-        data.error ||
-        (data.errors && data.errors[0].msg) ||
-        "Registration failed";
- alert("ERROR: " + JSON.stringify(data, null, 2)); // 🔥 shows real backend error
+      document.getElementById("registerMessage").textContent =
+        data.message || "Registration failed";
     }
+
   } catch (err) {
-    console.error("FETCH ERROR:", err);
-
-    message.style.color = "red";
-    message.textContent = "❌ Cannot connect to server";
-
-    alert("FETCH ERROR: " + err.message);
+    console.error("REGISTER ERROR:", err);
+    document.getElementById("registerMessage").textContent =
+      "Server error";
   }
 });

@@ -1,48 +1,45 @@
-const mongoose = require("mongoose");
-const bcrypt = require("bcryptjs");
+const BASE_URL = "https://ttb-x042.onrender.com";
 
-// 1. CREATE SCHEMA FIRST
-const userSchema = new mongoose.Schema({
-  name: { type: String, required: true },
+document.querySelector("form").addEventListener("submit", async (e) => {
+  e.preventDefault();
 
-  email: {
-    type: String,
-    required: true,
-    unique: true,
-  },
+  // ✅ get elements FIRST
+  const nameInput = document.getElementById("name");
+  const emailInput = document.getElementById("email");
+  const passwordInput = document.getElementById("password");
 
-  password: {
-    type: String,
-    required: true,
-  },
+  // ❗ safety check
+  if (!nameInput || !emailInput || !passwordInput) {
+    console.error("Input fields not found");
+    alert("Form error: check input IDs");
+    return;
+  }
 
-  accountNumber: {
-    type: String,
-    unique: true,
-    default: () =>
-      Math.floor(1000000000 + Math.random() * 9000000000).toString(),
-  },
+  const name = nameInput.value;
+  const email = emailInput.value;
+  const password = passwordInput.value;
 
-  balance: {
-    type: Number,
-    default: 0,
-  },
+  try {
+    const res = await fetch(`${BASE_URL}/api/auth/register`, {
+      method: "POST",
+      headers: {
+        "Content-Type": "application/json",
+      },
+      body: JSON.stringify({ name, email, password }),
+    });
+
+    const data = await res.json();
+    console.log("REGISTER:", data);
+
+    if (res.ok) {
+      alert("Registration successful 🎉");
+      window.location.href = "login.html";
+    } else {
+      alert(data.message || "Registration failed");
+    }
+
+  } catch (err) {
+    console.error("REGISTER ERROR:", err);
+    alert("Server error");
+  }
 });
-
-// 2. ADD MIDDLEWARE AFTER SCHEMA
-userSchema.pre("save", async function () {
-  if (!this.isModified("password")) return;
-
-  console.log("🔐 Hashing password...");
-
-  const salt = await bcrypt.genSalt(10);
-  this.password = await bcrypt.hash(this.password, salt);
-});
-
-// 3. ADD METHODS
-userSchema.methods.comparePassword = function (password) {
-  return bcrypt.compare(password, this.password);
-};
-
-// 4. EXPORT MODEL LAST
-module.exports = mongoose.model("User", userSchema);
