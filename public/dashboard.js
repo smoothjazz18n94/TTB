@@ -1,12 +1,17 @@
-const BASE_URL = "https://bank-backend.onrender.com";
+const BASE_URL = "https://bank-backend.onrender.com"; // 🔥 change if needed
 const token = localStorage.getItem("token");
 
-// ================= USER =================
+// 🔐 Redirect if no token
+if (!token) {
+  window.location.href = "login.html";
+}
+
+// ================= LOAD USER =================
 async function loadUser() {
   try {
-    const res = await fetch(`${BASE_URL}/api/auth/user`, {
+    const res = await fetch(`${BASE_URL}/api/transactions`, {
       headers: {
-        Authorization: `Bearer ${token}`,
+        Authorization: "Bearer " + token,
       },
     });
 
@@ -14,21 +19,80 @@ async function loadUser() {
     console.log("USER DATA:", data);
 
     if (!res.ok) {
-      showNotification("User not found. Login again.");
+      alert("User not found, login again");
       return;
     }
 
+    const user = data.user;
+
     document.getElementById("welcome").innerText =
-      "Welcome, " + (data.name || "User");
+      "Welcome " + user.name;
 
     document.getElementById("accountNumber").innerText =
-      "Acc: " + (data.accountNumber || "N/A");
+      user.accountNumber;
 
     document.getElementById("balance").innerText =
-      "₵ " + (data.balance || 0);
+      "₵ " + user.balance;
+
   } catch (err) {
-    console.error("USER LOAD ERROR:", err);
-    showNotification("Failed to load user");
+    console.error("USER ERROR:", err);
+  }
+}
+
+// ================= DEPOSIT =================
+async function deposit() {
+  const amount = document.getElementById("amount").value;
+
+  try {
+    const res = await fetch(`${BASE_URL}/api/transactions/deposit`, {
+      method: "POST",
+      headers: {
+        "Content-Type": "application/json",
+        Authorization: "Bearer " + token,
+      },
+      body: JSON.stringify({ amount }),
+    });
+
+    const data = await res.json();
+
+    if (res.ok) {
+      alert("Deposit successful");
+      loadUser();
+      loadHistory();
+    } else {
+      alert(data.error || "Deposit failed");
+    }
+  } catch (err) {
+    console.error("DEPOSIT ERROR:", err);
+  }
+}
+
+// ================= TRANSFER =================
+async function transfer() {
+  const receiverAccount = document.getElementById("receiver").value;
+  const amount = document.getElementById("transferAmount").value;
+
+  try {
+    const res = await fetch(`${BASE_URL}/api/transactions/transfer`, {
+      method: "POST",
+      headers: {
+        "Content-Type": "application/json",
+        Authorization: "Bearer " + token,
+      },
+      body: JSON.stringify({ receiverAccount, amount }),
+    });
+
+    const data = await res.json();
+
+    if (res.ok) {
+      alert("Transfer successful");
+      loadUser();
+      loadHistory();
+    } else {
+      alert(data.error || "Transfer failed");
+    }
+  } catch (err) {
+    console.error("TRANSFER ERROR:", err);
   }
 }
 
@@ -37,7 +101,7 @@ async function loadHistory() {
   try {
     const res = await fetch(`${BASE_URL}/api/transactions/history`, {
       headers: {
-        Authorization: `Bearer ${token}`,
+        Authorization: "Bearer " + token,
       },
     });
 
@@ -57,87 +121,20 @@ async function loadHistory() {
 
       const date = new Date(tx.createdAt).toLocaleString();
 
-      li.innerHTML = `
-        <strong>${tx.type}</strong> - ₵${tx.amount}
-        <br><small>${date}</small>
-      `;
+      li.textContent = `${tx.type} - ₵${tx.amount} (${date})`;
 
       list.appendChild(li);
     });
+
   } catch (err) {
     console.error("HISTORY ERROR:", err);
-    showNotification("Failed to load history");
   }
 }
 
-// ================= DEPOSIT =================
-async function deposit() {
-  const amount = document.getElementById("amount").value;
-
-  try {
-    const res = await fetch(`${BASE_URL}/api/transactions/deposit`, {
-      method: "POST",
-      headers: {
-        "Content-Type": "application/json",
-        Authorization: `Bearer ${token}`,
-      },
-      body: JSON.stringify({ amount }),
-    });
-
-    const data = await res.json();
-
-    if (res.ok) {
-      showNotification("Deposit successful");
-      loadUser();
-      loadHistory();
-    } else {
-      showNotification(data.message || "Deposit failed");
-    }
-  } catch (err) {
-    console.error("DEPOSIT ERROR:", err);
-  }
-}
-
-// ================= TRANSFER =================
-async function transfer() {
-  const receiver = document.getElementById("receiver").value;
-  const amount = document.getElementById("transferAmount").value;
-
-  try {
-    const res = await fetch(`${BASE_URL}/api/transactions/transfer`, {
-      method: "POST",
-      headers: {
-        "Content-Type": "application/json",
-        Authorization: `Bearer ${token}`,
-      },
-      body: JSON.stringify({ receiver, amount }),
-    });
-
-    const data = await res.json();
-
-    if (res.ok) {
-      showNotification("Transfer successful");
-      loadUser();
-      loadHistory();
-    } else {
-      showNotification(data.message || "Transfer failed");
-    }
-  } catch (err) {
-    console.error("TRANSFER ERROR:", err);
-  }
-}
-
-// ================= NOTIFICATION =================
-function showNotification(message) {
-  const note = document.createElement("div");
-  note.className = "notification";
-  note.innerText = message;
-
-  document.body.appendChild(note);
-
-  setTimeout(() => {
-    note.remove();
-  }, 3000);
+// ================= LOGOUT =================
+function logout() {
+  localStorage.removeItem("token");
+  window.location.href = "login.html";
 }
 
 // ================= INIT =================

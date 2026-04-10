@@ -1,4 +1,4 @@
-const BASE_URL = "https://bank-backend.onrender.com";
+const BASE_URL = "https://bank-backend.onrender.com"; // 🔥 change if different
 
 async function login() {
   const email = document.getElementById("email").value;
@@ -14,32 +14,16 @@ async function login() {
     });
 
     const data = await res.json();
-    console.log("LOGIN RESPONSE:", data);
+    console.log("LOGIN:", data);
 
     if (res.ok) {
-      // Save token
       localStorage.setItem("token", data.token);
-
-      // Redirect to dashboard
       window.location.href = "dashboard.html";
     } else {
-      showNotification(data.message || "Login failed");
+      alert(data.message || "Login failed");
     }
   } catch (err) {
     console.error("LOGIN ERROR:", err);
-    showNotification("Server error. Try again.");
+    alert("Server error");
   }
-}
-
-// 🔔 Notification (clean replacement for alert)
-function showNotification(message) {
-  const note = document.createElement("div");
-  note.className = "notification";
-  note.innerText = message;
-
-  document.body.appendChild(note);
-
-  setTimeout(() => {
-    note.remove();
-  }, 3000);
 }
