@@ -1,42 +1,45 @@
-const loginForm = document.getElementById('loginForm');
-const loginMessage = document.getElementById('loginMessage');
+const BASE_URL = "https://bank-backend.onrender.com";
 
-loginForm.addEventListener('submit', async (e) => {
-  e.preventDefault();
-
-  const email = loginForm.email.value;
-  const password = loginForm.password.value;
+async function login() {
+  const email = document.getElementById("email").value;
+  const password = document.getElementById("password").value;
 
   try {
-    const res = await fetch('http://localhost:5000/api/auth/login', {
-      method: 'POST',
-      headers: { 'Content-Type': 'application/json' },
-      body: JSON.stringify({ email, password })
+    const res = await fetch(`${BASE_URL}/api/auth/login`, {
+      method: "POST",
+      headers: {
+        "Content-Type": "application/json",
+      },
+      body: JSON.stringify({ email, password }),
     });
 
     const data = await res.json();
-    console.log(data);
+    console.log("LOGIN RESPONSE:", data);
 
     if (res.ok) {
-      loginMessage.style.color = 'green';
-      if (res.ok) {
-  // Save token
-  localStorage.setItem("token", data.token);
+      // Save token
+      localStorage.setItem("token", data.token);
 
-  // Redirect to dashboard
-  window.location.href = "dashboard.html";
-}
-      
-      // Save token if you want to use it for protected routes
-      localStorage.setItem('token', data.token);
-      loginForm.reset();
+      // Redirect to dashboard
+      window.location.href = "dashboard.html";
     } else {
-      loginMessage.style.color = 'red';
-      loginMessage.textContent = data.error || (data.errors && data.errors[0].msg) || 'Login failed';
+      showNotification(data.message || "Login failed");
     }
   } catch (err) {
-    console.error('Error:', err);
-    loginMessage.style.color = 'red';
-    loginMessage.textContent = 'Login failed. Check console.';
+    console.error("LOGIN ERROR:", err);
+    showNotification("Server error. Try again.");
   }
-});
+}
+
+// 🔔 Notification (clean replacement for alert)
+function showNotification(message) {
+  const note = document.createElement("div");
+  note.className = "notification";
+  note.innerText = message;
+
+  document.body.appendChild(note);
+
+  setTimeout(() => {
+    note.remove();
+  }, 3000);
+}
