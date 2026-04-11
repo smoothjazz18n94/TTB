@@ -1,5 +1,6 @@
 
 console.log("REGISTER JS LOADED");
+
 const BASE_URL = "https://ttb-x042.onrender.com";
 
 // wait until page fully loads
@@ -9,7 +10,7 @@ document.addEventListener("DOMContentLoaded", () => {
 
   form.addEventListener("submit", async (e) => {
     e.preventDefault();
-
+  console.log("FORM SUBMITTED");
     // get values safely
     const name = document.getElementById("name").value;
     const email = document.getElementById("email").value;
