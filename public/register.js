@@ -1,3 +1,5 @@
+
+console.log("REGISTER JS LOADED");
 const BASE_URL = "https://ttb-x042.onrender.com";
 
 // wait until page fully loads
