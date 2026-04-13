@@ -1,3 +1,4 @@
+console.log("LOGIN JS LOADED");
 const BASE_URL = "https://ttb-x042.onrender.com"; // 🔥 change if different
 
 async function login() {
