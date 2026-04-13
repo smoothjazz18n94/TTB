@@ -1,9 +1,18 @@
-console.log("LOGIN JS LOADED");
-const BASE_URL = "https://ttb-x042.onrender.com"; // 🔥 change if different
+const BASE_URL = "https://ttb-x042.onrender.com";
 
-async function login() {
+console.log("LOGIN JS LOADED");
+
+const form = document.getElementById("loginForm");
+
+form.addEventListener("submit", async (e) => {
+  e.preventDefault();
+
+  console.log("LOGIN SUBMITTED");
+
   const email = document.getElementById("email").value;
   const password = document.getElementById("password").value;
+
+  console.log("LOGIN DATA:", { email, password });
 
   try {
     const res = await fetch(`${BASE_URL}/api/auth/login`, {
@@ -15,16 +24,18 @@ async function login() {
     });
 
     const data = await res.json();
-    console.log("LOGIN:", data);
+    console.log("LOGIN RESPONSE:", data);
 
     if (res.ok) {
       localStorage.setItem("token", data.token);
+
       window.location.href = "dashboard.html";
     } else {
       alert(data.message || "Login failed");
     }
+
   } catch (err) {
     console.error("LOGIN ERROR:", err);
     alert("Server error");
   }
-}
+});
