@@ -16,8 +16,9 @@ app.use(cors({
   origin: [
     "http://localhost:3000",
     "http://127.0.0.1:5500",
-    "https://your-vercel-app.vercel.app"
+    "https://ttb-git-master-smoothjazz18n94s-projects.vercel.app"
   ],
+  methods: ["GET", "POST", "PUT", "DELETE"],
   credentials: true
 }));
 
