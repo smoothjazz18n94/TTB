@@ -1,22 +1,65 @@
+<!DOCTYPE html>
 <html lang="en">
 <head>
   <meta charset="UTF-8">
+  <title>Register</title>
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
-  <title>Trust Bank — Register</title>
-  <link rel="stylesheet" href="register.css"></link>
+  <link rel="stylesheet" href="register.css">
 </head>
 <body>
-  <form id="registerForm">
-  <input type="text" id="name" placeholder="Full Name" required />
-  <input type="email" id="email" placeholder="Email" required />
-  <input type="password" id="password" placeholder="Password" required />
 
-  <button id="registerBtn" type="submit">Register</button>
-</form>
-<p id="errorMsg"></p>
-<p id="successMsg"></p>
+<div class="container">
+
+  <!-- LOGO -->
+  <div class="logo">
+    <div class="logo-icon">🏦</div>
+    <h1>Trust Bank</h1>
+    <p>Create your account</p>
+  </div>
+
+  <!-- CARD -->
+  <div class="card">
+    <h2>Sign up</h2>
+    <p class="subtitle">Start your banking journey</p>
+
+    <form id="registerForm">
+
+      <div class="field">
+        <label>Full Name</label>
+        <input type="text" id="name" placeholder="John Doe" required>
+      </div>
+
+      <div class="field">
+        <label>Email</label>
+        <input type="email" id="email" placeholder="you@example.com" required>
+      </div>
+
+      <div class="field">
+        <label>Password</label>
+        <input type="password" id="password" placeholder="••••••••" required>
+
+        <div class="strength-bar">
+          <div id="strengthFill" class="strength-fill"></div>
+        </div>
+        <div id="strengthLabel" class="password-hint">At least 6 characters</div>
+      </div>
+
+      <button class="btn" type="submit">Create account</button>
+
+      <div id="errorMsg" class="error"></div>
+      <div id="successMsg" class="success"></div>
+
+    </form>
+  </div>
+
+  <!-- FOOTER -->
+  <div class="footer">
+    Already have an account? <a href="login.html">Sign in</a>
+  </div>
+
+</div>
+
+<script src="register.js"></script>
+
 </body>
 </html>
-
-
-
