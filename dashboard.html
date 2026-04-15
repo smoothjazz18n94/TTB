@@ -1,88 +1,53 @@
-<!DOCTYPE html>
-<html lang="en">
-<head>
-  <meta charset="UTF-8" />
-  <title>Dashboard</title>
-  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
-<link rel="stylesheet" href="dashboard.css">
-</head>
-<body>
+console.log("DASHBOARD JS LOADED");
 
-<div class="container">
+const BASE_URL = "https://ttb-x042.onrender.com";
+const token = localStorage.getItem("token");
 
-  <!-- TOP -->
-  <div class="top">
-    <h2>Welcome 👋</h2>
-    <div id="userAvatar" class="avatar">U</div>
-  </div>
+if (!token) {
+  window.location.href = "index.html";
+}
 
-  <!-- BALANCE -->
-  <div class="card">
-    <p>Available Balance</p>
-    <div id="balanceAmount" class="balance">₵ 0.00</div>
-    <p id="accountNumber">N/A</p>
+// LOAD USER
+async function loadUser() {
+  try {
+    const res = await fetch(`${BASE_URL}/api/auth/me`, {
+      headers: { Authorization: `Bearer ${token}` },
+    });
 
-    <div class="buttons">
-      <button onclick="openModal('deposit')">💰 Deposit</button>
-      <button onclick="openModal('transfer')">💸 Send</button>
-      <button onclick="openModal('withdraw')">🏧 Withdraw</button>
-    </div>
-  </div>
+    const data = await res.json();
 
-  <!-- TRANSACTIONS -->
-  <div class="section">
-    <h3>Recent Transactions</h3>
-    <div id="transactionsList"></div>
-  </div>
+    document.getElementById("balanceAmount").textContent =
+      "₵ " + (data.user.balance || 0).toFixed(2);
 
-  <!-- LOGOUT -->
-  <div class="section">
-    <button onclick="logout()">Logout</button>
-  </div>
+    document.getElementById("accountNumber").textContent =
+      data.user.accountNumber;
 
-</div>
+    document.getElementById("userAvatar").textContent =
+      data.user.name
+        ?.split(" ")
+        .map(n => n[0])
+        .join("")
+        .toUpperCase();
 
-<!-- ================= MODALS ================= -->
+  } catch (err) {
+    console.error(err);
+  }
+}
 
-<!-- DEPOSIT -->
-<div id="depositModal" class="modal">
-  <div class="modal-content">
-    <h3>Deposit</h3>
-    <form id="depositForm">
-      <input type="number" placeholder="Amount" required />
-      <button type="submit">Deposit</button>
-    </form>
-    <button onclick="closeModal('deposit')">Close</button>
-  </div>
-</div>
+// LOAD TRANSACTIONS
+async function loadTransactions() {
+  try {
+    const res = await fetch(`${BASE_URL}/api/transactions`, {
+      headers: { Authorization: `Bearer ${token}` },
+    });
 
-<!-- TRANSFER -->
-<div id="transferModal" class="modal">
-  <div class="modal-content">
-    <h3>Send Money</h3>
-    <form id="transferForm">
-      <input type="text" placeholder="Receiver Account" required />
-      <input type="number" placeholder="Amount" required />
-      <button type="submit">Send</button>
-    </form>
-    <button onclick="closeModal('transfer')">Close</button>
-  </div>
-</div>
+    const data = await res.json();
 
-<!-- WITHDRAW -->
-<div id="withdrawModal" class="modal">
-  <div class="modal-content">
-    <h3>Withdraw</h3>
-    <form id="withdrawForm">
-      <input type="number" placeholder="Amount" required />
-      <button type="submit">Withdraw</button>
-    </form>
-    <button onclick="closeModal('withdraw')">Close</button>
-  </div>
-</div>
+    const container = document.getElementById("transactionsList");
 
-<!-- YOUR JS -->
-<script src="dashboard.js"></script>
+    if (!data.transactions?.length) {
+      container.innerHTML = "<p>No transactions</p>";
+      return;
+    }
 
-</body>
-</html>
+    container

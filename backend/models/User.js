@@ -3,62 +3,49 @@ const bcrypt = require("bcryptjs");
 
 const userSchema = new mongoose.Schema(
   {
-    name: {
-      type: String,
-      required: [true, "Name is required"],
-      trim: true,
-    },
+    name: { type: String, required: true, trim: true },
 
     email: {
       type: String,
-      required: [true, "Email is required"],
+      required: true,
       unique: true,
       lowercase: true,
       trim: true,
     },
 
-    password: {
-      type: String,
-      required: [true, "Password is required"],
-      minlength: 6,
-    },
+    password: { type: String, required: true, minlength: 6 },
 
-    accountNumber: {
-      type: String,
-      unique: true,
-    },
+    accountNumber: { type: String, unique: true },
 
-    balance: {
-      type: Number,
-      default: 0,
-      min: [0, "Balance cannot be negative"],
-    },
+    balance: { type: Number, default: 0 },
 
-    // ✅ Monzo-style card freeze
-    isFrozen: {
-      type: Boolean,
-      default: false,
-    },
+    isFrozen: { type: Boolean, default: false },
 
-    // ✅ Profile avatar/color (like Monzo's profile initials color)
-    avatarColor: {
-      type: String,
-      default: "#4CAF50",
-    },
+    avatarColor: { type: String, default: "#4CAF50" },
 
-    // ✅ Spending limit per transaction
-    transactionLimit: {
-      type: Number,
-      default: 10000,
-    },
+    transactionLimit: { type: Number, default: 10000 },
 
-    // ✅ Account status
-    isActive: {
-      type: Boolean,
-      default: true,
-    },
+    isActive: { type: Boolean, default: true },
   },
   { timestamps: true }
 );
 
-// ===========
+// Generate account number + hash password
+userSchema.pre("save", async function (next) {
+  if (!this.accountNumber) {
+    this.accountNumber =
+      "10" + Math.floor(100000000 + Math.random() * 900000000);
+  }
+
+  if (!this.isModified("password")) return next();
+
+  this.password = await bcrypt.hash(this.password, 10);
+  next();
+});
+
+// Compare password
+userSchema.methods.comparePassword = async function (enteredPassword) {
+  return bcrypt.compare(enteredPassword, this.password);
+};
+
+module.exports = mongoose.model("User", userSchema);
