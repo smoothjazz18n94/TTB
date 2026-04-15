@@ -1,45 +1,19 @@
-<!DOCTYPE html>
-<html>
-  <head>
-    
-    <link rel="stylesheet" href="dashboard.css">
-  <button onclick="toggleDark()">🌙</button>
-  </head>
-
-<body>
 <div class="app">
 
   <!-- HEADER -->
   <div class="header">
     <div>
       <h2 id="welcome">Welcome</h2>
-      <p id="accountNumber">Account Number</p>
+      <p id="accountNumber"></p>
     </div>
-    <div>
-      <button onclick="toggleDark()">🌙</button>
-      <button onclick="logout()">Logout</button>
-    </div>
+    <button id="toggleTheme">🌙</button>
   </div>
 
-  <!-- 💳 BANK CARD -->
-  <div class="bank-card">
-    <div class="card-top">
-      <span>💳 The Trust Bank</span>
-    </div>
-
-    <div class="card-number">**** **** **** 4892</div>
-
-    <div class="card-bottom">
-      <div>
-        <small>Card Holder</small>
-        <p id="cardName">User</p>
-      </div>
-
-      <div>
-        <small>Balance</small>
-        <p id="balance">$ 0</p>
-      </div>
-    </div>
+  <!-- BALANCE CARD -->
+  <div class="balance-card">
+    <p>Available Balance</p>
+    <h1 id="balance">₵ 0.00</h1>
+    <span>•••• •••• •••• 4582</span>
   </div>
 
   <!-- ACTIONS -->
@@ -48,36 +22,29 @@
     <button onclick="transfer()">💸 Send</button>
   </div>
 
-  <!-- INPUTS -->
+  <!-- INPUT CARD -->
   <div class="card">
     <input id="amount" placeholder="Deposit amount" />
     <input id="receiver" placeholder="Receiver account" />
-    <input id="transferAmount" placeholder="Amount" />
+    <input id="transferAmount" placeholder="Amount to send" />
   </div>
 
   <!-- CHART -->
   <div class="card">
-    <h3>Spending</h3>
+    <h3>Spending Overview</h3>
     <canvas id="chart"></canvas>
   </div>
 
   <!-- HISTORY -->
   <div class="card">
-    <h3>Transactions</h3>
+    <h3>Recent Transactions</h3>
     <ul id="historyList"></ul>
   </div>
 
+  <!-- NOTIFICATIONS -->
+  <div id="toast"></div>
+
 </div>
 
-<!-- PIN LOCK SCREEN -->
-<div id="lockScreen" class="lock-screen">
-  <h2>🔒 Enter PIN</h2>
-  <input id="pinInput" type="password" maxlength="4" placeholder="****" />
-  <button onclick="unlock()">Unlock</button>
-</div>
-
-<!-- SCRIPTS -->
 <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
 <script src="dashboard.js"></script>
-</body>
-</html>
