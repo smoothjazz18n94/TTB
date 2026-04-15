@@ -1,6 +1,3 @@
-
-console.log("REGISTER JS LOADED");
-
  const BASE_URL = "https://ttb-x042.onrender.com";
 
     if (localStorage.getItem("token")) {
