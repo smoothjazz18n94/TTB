@@ -3,6 +3,7 @@ const router = express.Router();
 const { body, validationResult } = require("express-validator");
 const jwt = require("jsonwebtoken");
 const User = require("../models/User");
+const authenticateToken = require("../middleware/authenticateToken");
 
 // ======================
 // REGISTER USER
@@ -29,19 +30,13 @@ router.post(
 
       const { name, email, password } = req.body;
 
-      // Check if user exists
       const existingUser = await User.findOne({ email });
       if (existingUser) {
         console.log("❌ Email already exists");
         return res.status(400).json({ error: "Email already registered" });
       }
 
-      // Create user (accountNumber handled in model)
-      const user = new User({
-        name,
-        email,
-        password,
-      });
+      const user = new User({ name, email, password });
 
       console.log("🧪 User before save:", user);
 
@@ -49,7 +44,6 @@ router.post(
 
       console.log("✅ User saved successfully");
 
-      // Generate token
       const token = jwt.sign(
         { userId: user._id, email: user.email },
         process.env.JWT_SECRET,
@@ -69,9 +63,7 @@ router.post(
       });
     } catch (error) {
       console.log("❌ REGISTRATION FAILED");
-      console.log(error);
       console.log("STACK:", error.stack);
-
       res.status(500).json({
         error: error.message || "Server error during registration",
       });
@@ -134,14 +126,42 @@ router.post(
       });
     } catch (error) {
       console.log("❌ LOGIN FAILED");
-      console.log(error);
       console.log("STACK:", error.stack);
-
       res.status(500).json({
         error: error.message || "Server error during login",
       });
     }
   }
 );
+
+// ======================
+// GET CURRENT USER
+// ======================
+router.get("/me", authenticateToken, async (req, res) => {
+  try {
+    console.log("✅ /me ROUTE HIT — userId:", req.user.userId);
+
+    const user = await User.findById(req.user.userId).select("-password");
+
+    if (!user) {
+      console.log("❌ User not found in DB");
+      return res.status(404).json({ error: "User not found" });
+    }
+
+    res.json({
+      user: {
+        id: user._id,
+        name: user.name,
+        email: user.email,
+        accountNumber: user.accountNumber,
+        balance: user.balance,
+      },
+    });
+
+  } catch (error) {
+    console.log("❌ /me FAILED:", error);
+    res.status(500).json({ error: "Server error" });
+  }
+});
 
 module.exports = router;

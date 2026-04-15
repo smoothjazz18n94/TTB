@@ -1,24 +1,64 @@
 const mongoose = require("mongoose");
 const bcrypt = require("bcryptjs");
 
-const userSchema = new mongoose.Schema({
-  name: String,
-  email: String,
-  password: String,
-  accountNumber: String,
-  balance: { type: Number, default: 0 },
-});
+const userSchema = new mongoose.Schema(
+  {
+    name: {
+      type: String,
+      required: [true, "Name is required"],
+      trim: true,
+    },
 
-// ✅ SAFE VERSION (NO next)
-userSchema.pre("save", async function () {
-  if (!this.isModified("password")) return;
+    email: {
+      type: String,
+      required: [true, "Email is required"],
+      unique: true,
+      lowercase: true,
+      trim: true,
+    },
 
-  this.password = await bcrypt.hash(this.password, 10);
-});
+    password: {
+      type: String,
+      required: [true, "Password is required"],
+      minlength: 6,
+    },
 
-// ✅ compare password
-userSchema.methods.comparePassword = async function (enteredPassword) {
-  return await bcrypt.compare(enteredPassword, this.password);
-};
+    accountNumber: {
+      type: String,
+      unique: true,
+    },
 
-module.exports = mongoose.model("User", userSchema);
+    balance: {
+      type: Number,
+      default: 0,
+      min: [0, "Balance cannot be negative"],
+    },
+
+    // ✅ Monzo-style card freeze
+    isFrozen: {
+      type: Boolean,
+      default: false,
+    },
+
+    // ✅ Profile avatar/color (like Monzo's profile initials color)
+    avatarColor: {
+      type: String,
+      default: "#4CAF50",
+    },
+
+    // ✅ Spending limit per transaction
+    transactionLimit: {
+      type: Number,
+      default: 10000,
+    },
+
+    // ✅ Account status
+    isActive: {
+      type: Boolean,
+      default: true,
+    },
+  },
+  { timestamps: true }
+);
+
+// ===========
