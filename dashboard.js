@@ -1,100 +1,103 @@
+console.log("DASHBOARD JS LOADED");
+
 const BASE_URL = "https://ttb-x042.onrender.com";
 
-console.log("🚀 DASHBOARD LOADED");
-
-let token = localStorage.getItem("token");
+const token = localStorage.getItem("token");
+let user = JSON.parse(localStorage.getItem("user")) || {};
 
 // ======================
-// 🔔 NOTIFICATION SYSTEM
+// AUTH CHECK
 // ======================
-function notify(message) {
-  const toast = document.getElementById("toast");
-  toast.textContent = message;
-  toast.style.display = "block";
-
-  setTimeout(() => {
-    toast.style.display = "none";
-  }, 3000);
+if (!token) {
+  window.location.href = "index.html";
 }
 
 // ======================
-// 👤 LOAD USER DATA
+// LOAD USER DATA
 // ======================
 async function loadUser() {
   try {
     const res = await fetch(`${BASE_URL}/api/auth/me`, {
-      headers: { Authorization: `Bearer ${token}` },
+      headers: {
+        Authorization: `Bearer ${token}`,
+      },
     });
 
     const data = await res.json();
+
     console.log("USER DATA:", data);
 
-    if (!res.ok) throw new Error(data.error);
+    user = data.user;
 
-    document.getElementById("welcome").textContent =
-      `Welcome, ${data.user.name}`;
+    document.getElementById("balanceAmount").textContent =
+      "₵ " + (user.balance || 0).toFixed(2);
 
     document.getElementById("accountNumber").textContent =
-      `Acc: ${data.user.accountNumber}`;
+      user.accountNumber || "N/A";
 
-    document.getElementById("balance").textContent =
-      `₵ ${data.user.balance.toFixed(2)}`;
+    document.getElementById("userAvatar").textContent =
+      user.name
+        ?.split(" ")
+        .map((n) => n[0])
+        .join("")
+        .toUpperCase() || "U";
 
   } catch (err) {
-    console.error(err);
-    notify("Failed to load user");
+    console.error("LOAD USER ERROR:", err);
   }
 }
 
 // ======================
-// 💸 LOAD TRANSACTIONS
+// LOAD TRANSACTIONS
 // ======================
 async function loadTransactions() {
   try {
     const res = await fetch(`${BASE_URL}/api/transactions`, {
-      headers: { Authorization: `Bearer ${token}` },
+      headers: {
+        Authorization: `Bearer ${token}`,
+      },
     });
 
     const data = await res.json();
-    console.log("HISTORY:", data);
 
-    const list = document.getElementById("historyList");
-    list.innerHTML = "";
+    console.log("TRANSACTIONS:", data);
 
-    let deposits = 0;
-    let transfers = 0;
+    const container = document.getElementById("transactionsList");
 
-    data.transactions.forEach((tx) => {
-      const li = document.createElement("li");
+    if (!data.transactions || data.transactions.length === 0) {
+      container.innerHTML = "<p>No transactions yet</p>";
+      return;
+    }
 
-      const date = new Date(tx.createdAt).toLocaleString();
-
-      li.innerHTML = `
-        <strong>${tx.type.toUpperCase()}</strong> - ₵${tx.amount}
-        <br><small>${date}</small>
+    container.innerHTML = data.transactions
+      .slice(0, 5)
+      .map((t) => {
+        return `
+        <div class="transaction-item">
+          <div>
+            <strong>${t.type.toUpperCase()}</strong><br/>
+            <small>${new Date(t.createdAt).toLocaleDateString()}</small>
+          </div>
+          <div>
+            ₵ ${t.amount}
+          </div>
+        </div>
       `;
-
-      list.appendChild(li);
-
-      if (tx.type === "deposit") deposits += tx.amount;
-      if (tx.type === "transfer") transfers += tx.amount;
-    });
-
-    updateChart(deposits, transfers);
+      })
+      .join("");
 
   } catch (err) {
-    console.error(err);
-    notify("Failed to load transactions");
+    console.error("TRANSACTION ERROR:", err);
   }
 }
 
 // ======================
-// 💰 DEPOSIT
+// DEPOSIT
 // ======================
-async function deposit() {
-  const amount = document.getElementById("amount").value;
+document.getElementById("depositForm")?.addEventListener("submit", async (e) => {
+  e.preventDefault();
 
-  if (!amount) return notify("Enter amount");
+  const amount = e.target[0].value;
 
   try {
     const res = await fetch(`${BASE_URL}/api/transactions/deposit`, {
@@ -108,27 +111,27 @@ async function deposit() {
 
     const data = await res.json();
 
-    if (!res.ok) throw new Error(data.error);
+    console.log("DEPOSIT:", data);
 
-    notify("Deposit successful 💰");
+    alert("Deposit successful 💰");
 
     loadUser();
     loadTransactions();
+    closeModal("deposit");
 
   } catch (err) {
-    console.error(err);
-    notify("Deposit failed");
+    console.error("DEPOSIT ERROR:", err);
   }
-}
+});
 
 // ======================
-// 💸 TRANSFER
+// SEND MONEY
 // ======================
-async function transfer() {
-  const receiver = document.getElementById("receiver").value;
-  const amount = document.getElementById("transferAmount").value;
+document.getElementById("transferForm")?.addEventListener("submit", async (e) => {
+  e.preventDefault();
 
-  if (!receiver || !amount) return notify("Fill all fields");
+  const receiver = e.target[0].value;
+  const amount = e.target[1].value;
 
   try {
     const res = await fetch(`${BASE_URL}/api/transactions/transfer`, {
@@ -142,75 +145,75 @@ async function transfer() {
 
     const data = await res.json();
 
-    if (!res.ok) throw new Error(data.error);
+    console.log("TRANSFER:", data);
 
-    notify("Transfer successful 💸");
+    alert("Transfer successful 💸");
 
     loadUser();
     loadTransactions();
+    closeModal("transfer");
 
   } catch (err) {
-    console.error(err);
-    notify("Transfer failed");
+    console.error("TRANSFER ERROR:", err);
   }
-}
-
-// ======================
-// 📊 CHART
-// ======================
-let chart;
-
-function updateChart(deposits, transfers) {
-  const ctx = document.getElementById("chart");
-
-  if (chart) chart.destroy();
-
-  chart = new Chart(ctx, {
-    type: "doughnut",
-    data: {
-      labels: ["Deposits", "Transfers"],
-      datasets: [
-        {
-          data: [deposits, transfers],
-        },
-      ],
-    },
-  });
-}
-
-// ======================
-// 🌙 DARK MODE
-// ======================
-document.getElementById("toggleTheme").onclick = () => {
-  document.body.classList.toggle("light");
-};
-
-// ======================
-// 📱 SWIPE (MOBILE FEEL)
-// ======================
-let startX = 0;
-
-document.addEventListener("touchstart", (e) => {
-  startX = e.touches[0].clientX;
-});
-
-document.addEventListener("touchend", (e) => {
-  let endX = e.changedTouches[0].clientX;
-
-  if (endX - startX > 100) notify("👉 Swiped right");
-  if (startX - endX > 100) notify("👈 Swiped left");
 });
 
 // ======================
-// 🔄 AUTO REFRESH (REAL-TIME FEEL)
+// WITHDRAW
 // ======================
-setInterval(() => {
+document.getElementById("withdrawForm")?.addEventListener("submit", async (e) => {
+  e.preventDefault();
+
+  const amount = e.target[0].value;
+
+  try {
+    const res = await fetch(`${BASE_URL}/api/transactions/withdraw`, {
+      method: "POST",
+      headers: {
+        "Content-Type": "application/json",
+        Authorization: `Bearer ${token}`,
+      },
+      body: JSON.stringify({ amount }),
+    });
+
+    const data = await res.json();
+
+    console.log("WITHDRAW:", data);
+
+    alert("Withdraw successful 💸");
+
+    loadUser();
+    loadTransactions();
+    closeModal("withdraw");
+
+  } catch (err) {
+    console.error("WITHDRAW ERROR:", err);
+  }
+});
+
+// ======================
+// MODALS
+// ======================
+function openModal(type) {
+  document.getElementById(`${type}Modal`).style.display = "flex";
+}
+
+function closeModal(type) {
+  document.getElementById(`${type}Modal`).style.display = "none";
+}
+
+// ======================
+// LOGOUT
+// ======================
+function logout() {
+  localStorage.clear();
+  window.location.href = "index.html";
+}
+
+// ======================
+// INIT
+// ======================
+window.onload = () => {
   loadUser();
   loadTransactions();
-}, 5000);
-
-// ======================
-// 🚀 INIT
-// ======================
-loadUser();
-loadTransactions();
+};

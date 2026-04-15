@@ -1,64 +1,184 @@
 <!DOCTYPE html>
-<html>
-  
+<html lang="en">
 <head>
   <meta charset="UTF-8" />
-  <meta name="viewport" content="width=device-width, initial-scale=1.0"/>
   <title>Dashboard</title>
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
 
-  <!-- ✅ THIS LINE IS THE FIX -->
-  <link rel="stylesheet" href="dashboard.css">
+  <style>
+    body {
+      font-family: Arial, sans-serif;
+      margin: 0;
+      background: #0f172a;
+      color: white;
+    }
+
+    .container {
+      padding: 20px;
+    }
+
+    .top {
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+    }
+
+    .avatar {
+      background: #22c55e;
+      width: 40px;
+      height: 40px;
+      border-radius: 50%;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      font-weight: bold;
+    }
+
+    .card {
+      background: linear-gradient(135deg, #1e293b, #020617);
+      padding: 20px;
+      border-radius: 15px;
+      margin-top: 20px;
+    }
+
+    .balance {
+      font-size: 30px;
+      margin: 10px 0;
+    }
+
+    .buttons {
+      display: flex;
+      gap: 10px;
+      margin-top: 15px;
+    }
+
+    button {
+      padding: 10px;
+      border: none;
+      border-radius: 8px;
+      cursor: pointer;
+      background: #22c55e;
+      color: black;
+      font-weight: bold;
+    }
+
+    .section {
+      margin-top: 30px;
+    }
+
+    .transaction-item {
+      display: flex;
+      justify-content: space-between;
+      padding: 10px 0;
+      border-bottom: 1px solid #334155;
+    }
+
+    /* MODAL */
+    .modal {
+      display: none;
+      position: fixed;
+      top: 0;
+      left: 0;
+      width: 100%;
+      height: 100%;
+      background: rgba(0,0,0,0.7);
+      justify-content: center;
+      align-items: center;
+    }
+
+    .modal-content {
+      background: #1e293b;
+      padding: 20px;
+      border-radius: 10px;
+      width: 300px;
+    }
+
+    input {
+      width: 100%;
+      padding: 10px;
+      margin: 10px 0;
+      border-radius: 5px;
+      border: none;
+    }
+  </style>
 </head>
 <body>
-<div class="app">
 
-  <!-- HEADER -->
-  <div class="header">
-    <div>
-      <h2 id="welcome">Welcome</h2>
-      <p id="accountNumber"></p>
-    </div>
-    <button id="toggleTheme">🌙</button>
+<div class="container">
+
+  <!-- TOP -->
+  <div class="top">
+    <h2>Welcome 👋</h2>
+    <div id="userAvatar" class="avatar">U</div>
   </div>
 
-  <!-- BALANCE CARD -->
-  <div class="balance-card">
+  <!-- BALANCE -->
+  <div class="card">
     <p>Available Balance</p>
-    <h1 id="balance">₵ 0.00</h1>
-    <span>•••• •••• •••• 4582</span>
+    <div id="balanceAmount" class="balance">₵ 0.00</div>
+    <p id="accountNumber">N/A</p>
+
+    <div class="buttons">
+      <button onclick="openModal('deposit')">💰 Deposit</button>
+      <button onclick="openModal('transfer')">💸 Send</button>
+      <button onclick="openModal('withdraw')">🏧 Withdraw</button>
+    </div>
   </div>
 
-  <!-- ACTIONS -->
-  <div class="actions">
-    <button onclick="deposit()">💰 Deposit</button>
-    <button onclick="transfer()">💸 Send</button>
-  </div>
-
-  <!-- INPUT CARD -->
-  <div class="card">
-    <input id="amount" placeholder="Deposit amount" />
-    <input id="receiver" placeholder="Receiver account" />
-    <input id="transferAmount" placeholder="Amount to send" />
-  </div>
-
-  <!-- CHART -->
-  <div class="card">
-    <h3>Spending Overview</h3>
-    <canvas id="chart"></canvas>
-  </div>
-
-  <!-- HISTORY -->
-  <div class="card">
+  <!-- TRANSACTIONS -->
+  <div class="section">
     <h3>Recent Transactions</h3>
-    <ul id="historyList"></ul>
+    <div id="transactionsList"></div>
   </div>
 
-  <!-- NOTIFICATIONS -->
-  <div id="toast"></div>
+  <!-- LOGOUT -->
+  <div class="section">
+    <button onclick="logout()">Logout</button>
+  </div>
 
 </div>
 
-<script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
+<!-- ================= MODALS ================= -->
+
+<!-- DEPOSIT -->
+<div id="depositModal" class="modal">
+  <div class="modal-content">
+    <h3>Deposit</h3>
+    <form id="depositForm">
+      <input type="number" placeholder="Amount" required />
+      <button type="submit">Deposit</button>
+    </form>
+    <button onclick="closeModal('deposit')">Close</button>
+  </div>
+</div>
+
+<!-- TRANSFER -->
+<div id="transferModal" class="modal">
+  <div class="modal-content">
+    <h3>Send Money</h3>
+    <form id="transferForm">
+      <input type="text" placeholder="Receiver Account" required />
+      <input type="number" placeholder="Amount" required />
+      <button type="submit">Send</button>
+    </form>
+    <button onclick="closeModal('transfer')">Close</button>
+  </div>
+</div>
+
+<!-- WITHDRAW -->
+<div id="withdrawModal" class="modal">
+  <div class="modal-content">
+    <h3>Withdraw</h3>
+    <form id="withdrawForm">
+      <input type="number" placeholder="Amount" required />
+      <button type="submit">Withdraw</button>
+    </form>
+    <button onclick="closeModal('withdraw')">Close</button>
+  </div>
+</div>
+
+<!-- YOUR JS -->
 <script src="dashboard.js"></script>
+
 </body>
 </html>
