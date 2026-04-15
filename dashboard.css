@@ -1,94 +1,94 @@
 body {
-  margin: 0;
-  font-family: 'Segoe UI', sans-serif;
-  background: #0f172a;
-  color: white;
-}
+      font-family: Arial, sans-serif;
+      margin: 0;
+      background: #0f172a;
+      color: white;
+    }
 
-.app {
-  max-width: 420px;
-  margin: auto;
-  padding: 20px;
-}
+    .container {
+      padding: 20px;
+    }
 
-/* HEADER */
-.header {
-  display: flex;
-  justify-content: space-between;
-  align-items: center;
-}
+    .top {
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+    }
 
-#toggleTheme {
-  background: #1e293b;
-  border: none;
-  color: white;
-  padding: 8px;
-  border-radius: 10px;
-}
+    .avatar {
+      background: #22c55e;
+      width: 40px;
+      height: 40px;
+      border-radius: 50%;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      font-weight: bold;
+    }
 
-/* BALANCE CARD */
-.balance-card {
-  background: linear-gradient(135deg, #6366f1, #9333ea);
-  padding: 20px;
-  border-radius: 20px;
-  margin: 20px 0;
-  box-shadow: 0 10px 30px rgba(0,0,0,0.3);
-}
+    .card {
+      background: linear-gradient(135deg, #1e293b, #020617);
+      padding: 20px;
+      border-radius: 15px;
+      margin-top: 20px;
+    }
 
-.balance-card h1 {
-  font-size: 2rem;
-}
+    .balance {
+      font-size: 30px;
+      margin: 10px 0;
+    }
 
-/* ACTIONS */
-.actions {
-  display: flex;
-  gap: 10px;
-}
+    .buttons {
+      display: flex;
+      gap: 10px;
+      margin-top: 15px;
+    }
 
-.actions button {
-  flex: 1;
-  padding: 12px;
-  border-radius: 12px;
-  border: none;
-  background: #1e293b;
-  color: white;
-}
+    button {
+      padding: 10px;
+      border: none;
+      border-radius: 8px;
+      cursor: pointer;
+      background: #22c55e;
+      color: black;
+      font-weight: bold;
+    }
 
-/* CARDS */
-.card {
-  background: #1e293b;
-  padding: 15px;
-  border-radius: 15px;
-  margin-top: 15px;
-}
+    .section {
+      margin-top: 30px;
+    }
 
-.card input {
-  width: 100%;
-  padding: 10px;
-  margin-top: 10px;
-  border-radius: 10px;
-  border: none;
-}
+    .transaction-item {
+      display: flex;
+      justify-content: space-between;
+      padding: 10px 0;
+      border-bottom: 1px solid #334155;
+    }
 
-/* HISTORY */
-#historyList {
-  list-style: none;
-  padding: 0;
-}
+    /* MODAL */
+    .modal {
+      display: none;
+      position: fixed;
+      top: 0;
+      left: 0;
+      width: 100%;
+      height: 100%;
+      background: rgba(0,0,0,0.7);
+      justify-content: center;
+      align-items: center;
+    }
 
-#historyList li {
-  padding: 10px;
-  border-bottom: 1px solid #334155;
-}
+    .modal-content {
+      background: #1e293b;
+      padding: 20px;
+      border-radius: 10px;
+      width: 300px;
+    }
 
-/* TOAST */
-#toast {
-  position: fixed;
-  bottom: 20px;
-  left: 50%;
-  transform: translateX(-50%);
-  background: #22c55e;
-  padding: 10px 20px;
-  border-radius: 10px;
-  display: none;
-}
+    input {
+      width: 100%;
+      padding: 10px;
+      margin: 10px 0;
+      border-radius: 5px;
+      border: none;
+    }
