@@ -48,3 +48,25 @@ form.addEventListener("submit", async (e) => {
     showError("Server error");
   }
 });
+
+router.post("/register", async (req, res) => {
+  try {
+    const { name, email, password } = req.body;
+
+    const existingUser = await User.findOne({ email });
+
+    if (existingUser) {
+      return res.status(400).json({ error: "Email already exists" });
+    }
+
+    const user = new User({ name, email, password });
+
+    await user.save();
+
+    res.json({ message: "User created successfully" });
+
+  } catch (err) {
+    console.error("REGISTER ERROR:", err); // 👈 CHECK THIS IN RENDER LOGS
+    res.status(500).json({ error: "Server error" });
+  }
+});

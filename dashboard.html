@@ -1,53 +1,210 @@
-console.log("DASHBOARD JS LOADED");
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0"/>
+  <title>Trust Bank — Dashboard</title>
+  <link rel="stylesheet" href="dashboard.css"></link>
+</head>
+<body>
 
-const BASE_URL = "https://ttb-x042.onrender.com";
-const token = localStorage.getItem("token");
+<!-- Loading screen -->
+<div class="loading-overlay" id="loadingScreen">
+  <div class="logo">🏦</div>
+  <p>Loading your account...</p>
+</div>
 
-if (!token) {
-  window.location.href = "index.html";
-}
+<div class="app" id="appContent" style="display:none">
 
-// LOAD USER
-async function loadUser() {
-  try {
-    const res = await fetch(`${BASE_URL}/api/auth/me`, {
-      headers: { Authorization: `Bearer ${token}` },
-    });
+  <!-- HEADER -->
+  <div class="header">
+    <div class="header-left">
+      <div class="avatar" id="avatarEl">TB</div>
+      <div class="header-text">
+        <h2 id="welcome">Welcome back</h2>
+        <p id="accountNumber">Loading...</p>
+      </div>
+    </div>
+    <div class="header-actions">
+      <div class="icon-btn" id="toggleTheme" title="Toggle theme">🌙</div>
+      <div class="icon-btn" id="logoutBtn" title="Logout">🚪</div>
+    </div>
+  </div>
 
-    const data = await res.json();
+  <!-- BALANCE CARD -->
+  <div class="balance-card">
+    <p class="balance-label">Available Balance</p>
+    <div class="balance-amount" id="balanceEl">
+      <span>₵ 0.00</span>
+    </div>
+    <div class="card-row">
+      <p class="card-number">•••• •••• •••• <span id="lastFour">----</span></p>
+      <span class="freeze-badge" id="freezeBadge">❄️ Frozen</span>
+    </div>
+  </div>
 
-    document.getElementById("balanceAmount").textContent =
-      "₵ " + (data.user.balance || 0).toFixed(2);
+  <!-- QUICK ACTIONS -->
+  <div class="quick-actions">
+    <div class="action-btn" onclick="openSheet('deposit')">
+      <div class="action-icon">💰</div>
+      <span class="action-label">Deposit</span>
+    </div>
+    <div class="action-btn" onclick="openSheet('transfer')">
+      <div class="action-icon">💸</div>
+      <span class="action-label">Send</span>
+    </div>
+    <div class="action-btn" onclick="toggleFreeze()">
+      <div class="action-icon" id="freezeIcon">❄️</div>
+      <span class="action-label" id="freezeLabel">Freeze</span>
+    </div>
+    <div class="action-btn" onclick="openSheet('limit')">
+      <div class="action-icon">🔒</div>
+      <span class="action-label">Limit</span>
+    </div>
+  </div>
 
-    document.getElementById("accountNumber").textContent =
-      data.user.accountNumber;
+  <!-- STATS -->
+  <div class="stats-row">
+    <div class="stat-card">
+      <p class="stat-label">Money in</p>
+      <p class="stat-value income" id="totalIn">₵ 0.00</p>
+    </div>
+    <div class="stat-card">
+      <p class="stat-label">Money out</p>
+      <p class="stat-value expense" id="totalOut">₵ 0.00</p>
+    </div>
+  </div>
 
-    document.getElementById("userAvatar").textContent =
-      data.user.name
-        ?.split(" ")
-        .map(n => n[0])
-        .join("")
-        .toUpperCase();
+  <!-- CHART -->
+  <div class="section">
+    <div class="section-header">
+      <h3>Spending Overview</h3>
+    </div>
+    <div class="chart-card">
+      <canvas id="chart"></canvas>
+    </div>
+  </div>
 
-  } catch (err) {
-    console.error(err);
-  }
-}
+  <!-- TRANSACTIONS -->
+  <div class="section">
+    <div class="section-header">
+      <h3>Recent Transactions</h3>
+    </div>
+    <div class="tx-list" id="historyList">
+      <div class="empty-state">
+        <div>💳</div>
+        <p>No transactions yet</p>
+      </div>
+    </div>
+  </div>
 
-// LOAD TRANSACTIONS
-async function loadTransactions() {
-  try {
-    const res = await fetch(`${BASE_URL}/api/transactions`, {
-      headers: { Authorization: `Bearer ${token}` },
-    });
+</div>
 
-    const data = await res.json();
+<!-- BOTTOM NAV -->
+<div class="bottom-nav">
+  <div class="nav-item active">
+    <span class="nav-icon">🏠</span>
+    <span class="nav-label">Home</span>
+  </div>
+  <div class="nav-item" onclick="openSheet('transfer')">
+    <span class="nav-icon">↗️</span>
+    <span class="nav-label">Send</span>
+  </div>
+  <div class="nav-item" onclick="openSheet('deposit')">
+    <span class="nav-icon">➕</span>
+    <span class="nav-label">Add</span>
+  </div>
+  <div class="nav-item">
+    <span class="nav-icon">👤</span>
+    <span class="nav-label">Profile</span>
+  </div>
+</div>
 
-    const container = document.getElementById("transactionsList");
+<!-- DEPOSIT SHEET -->
+<div class="overlay" id="depositOverlay" onclick="closeOnBackdrop(event, 'depositOverlay')">
+  <div class="sheet">
+    <div class="sheet-handle"></div>
+    <h3>💰 Add Money</h3>
+    <div class="sheet-field">
+      <label>Amount (₵)</label>
+      <input type="number" id="depositAmount" placeholder="0.00" min="0.01" />
+    </div>
+    <div class="sheet-field">
+      <label>Category</label>
+      <select id="depositCategory">
+        <option value="general">General</option>
+        <option value="savings">Savings</option>
+        <option value="bills">Bills</option>
+      </select>
+    </div>
+    <div class="sheet-field">
+      <label>Note (optional)</label>
+      <input type="text" id="depositNote" placeholder="e.g. Monthly salary" maxlength="100" />
+    </div>
+    <div class="sheet-actions">
+      <button class="btn-secondary" onclick="closeSheet('depositOverlay')">Cancel</button>
+      <button class="btn-primary" id="depositBtn" onclick="deposit()">Deposit</button>
+    </div>
+  </div>
+</div>
 
-    if (!data.transactions?.length) {
-      container.innerHTML = "<p>No transactions</p>";
-      return;
-    }
+<!-- TRANSFER SHEET -->
+<div class="overlay" id="transferOverlay" onclick="closeOnBackdrop(event, 'transferOverlay')">
+  <div class="sheet">
+    <div class="sheet-handle"></div>
+    <h3>💸 Send Money</h3>
+    <div class="sheet-field">
+      <label>Recipient Account Number</label>
+      <input type="text" id="transferReceiver" placeholder="10-digit account number" />
+    </div>
+    <div class="sheet-field">
+      <label>Amount (₵)</label>
+      <input type="number" id="transferAmount" placeholder="0.00" min="0.01" />
+    </div>
+    <div class="sheet-field">
+      <label>Category</label>
+      <select id="transferCategory">
+        <option value="general">General</option>
+        <option value="food">Food</option>
+        <option value="transport">Transport</option>
+        <option value="shopping">Shopping</option>
+        <option value="bills">Bills</option>
+        <option value="entertainment">Entertainment</option>
+        <option value="health">Health</option>
+      </select>
+    </div>
+    <div class="sheet-field">
+      <label>Note (optional)</label>
+      <input type="text" id="transferNote" placeholder="e.g. Rent payment" maxlength="100" />
+    </div>
+    <div class="sheet-actions">
+      <button class="btn-secondary" onclick="closeSheet('transferOverlay')">Cancel</button>
+      <button class="btn-primary" id="transferBtn" onclick="transfer()">Send Money</button>
+    </div>
+  </div>
+</div>
 
-    container
+<!-- LIMIT SHEET -->
+<div class="overlay" id="limitOverlay" onclick="closeOnBackdrop(event, 'limitOverlay')">
+  <div class="sheet">
+    <div class="sheet-handle"></div>
+    <h3>🔒 Transaction Limit</h3>
+    <p style="color:var(--muted);font-size:13px;margin-bottom:16px;">Set the maximum amount allowed per transaction.</p>
+    <div class="sheet-field">
+      <label>Limit (₵)</label>
+      <input type="number" id="limitAmount" placeholder="e.g. 5000" min="1" />
+    </div>
+    <div class="sheet-actions">
+      <button class="btn-secondary" onclick="closeSheet('limitOverlay')">Cancel</button>
+      <button class="btn-primary" onclick="setLimit()">Save Limit</button>
+    </div>
+  </div>
+</div>
+
+<!-- TOAST -->
+<div id="toast"></div>
+
+<script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
+
+</body>
+</html>

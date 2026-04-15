@@ -1,58 +1,38 @@
-const BASE_URL = "https://ttb-x042.onrender.com";
+const express = require("express");
+const router = express.Router();
+const jwt = require("jsonwebtoken");
+const User = require("../models/User");
 
-if (localStorage.getItem("token")) {
-  window.location.href = "dashboard.html";
-}
-
-const btn = document.getElementById("loginBtn");
-const errorMsg = document.getElementById("errorMsg");
-
-function showError(msg) {
-  errorMsg.textContent = msg;
-  errorMsg.style.display = "block";
-}
-
-function setLoading(loading) {
-  btn.disabled = loading;
-  btn.innerHTML = loading
-    ? "Signing in..."
-    : "Sign in";
-}
-
-btn.addEventListener("click", login);
-
-async function login() {
-  errorMsg.style.display = "none";
-
-  const email = document.getElementById("email").value.trim();
-  const password = document.getElementById("password").value;
-
-  if (!email || !password) return showError("Please fill in all fields");
-
-  setLoading(true);
-
+// LOGIN
+router.post("/login", async (req, res) => {
   try {
-    const res = await fetch(`${BASE_URL}/api/auth/login`, {
-      method: "POST",
-      headers: { "Content-Type": "application/json" },
-      body: JSON.stringify({ email, password }),
-    });
+    const { email, password } = req.body;
 
-    const data = await res.json();
-    console.log("LOGIN RESPONSE:", data);
+    const user = await User.findOne({ email });
 
-    if (!res.ok) {
-      return showError(data.error || "Login failed");
+    if (!user) {
+      return res.status(400).json({ error: "User not found" });
     }
 
-    localStorage.setItem("token", data.token);
-    localStorage.setItem("user", JSON.stringify(data.user));
+    const isMatch = await user.comparePassword(password);
 
-    window.location.href = "dashboard.html";
+    if (!isMatch) {
+      return res.status(400).json({ error: "Wrong password" });
+    }
+
+    const token = jwt.sign(
+      { userId: user._id },
+      process.env.JWT_SECRET,
+      { expiresIn: "7d" }
+    );
+
+    res.json({
+      token,
+      user,
+    });
 
   } catch (err) {
-    showError("Server error");
-  } finally {
-    setLoading(false);
+    console.error("LOGIN ERROR:", err); // 👈 VERY IMPORTANT
+    res.status(500).json({ error: "Server error" });
   }
-}
+});
