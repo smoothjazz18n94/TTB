@@ -40,13 +40,9 @@ app.get("/", (req, res) => {
 // ======================
 // DB CONNECTION
 // ======================
-mongoose.connect(process.env.MONGO_URI, {
-  useNewUrlParser: true,
-  useUnifiedTopology: true,
-})
-.then(() => console.log("MongoDB connected successfully"))
-.catch((err) => console.error("MongoDB connection error:", err));
-
+mongoose.connect(process.env.MONGO_URI)
+  .then(() => console.log("MongoDB connected successfully"))
+  .catch((err) => console.error("MongoDB connection error:", err));
 // ======================
 // ERROR HANDLER
 // ======================
