@@ -61,37 +61,30 @@ const userSchema = new mongoose.Schema(
 );
 
 // ======================
-// GENERATE ACCOUNT NUMBER
+// AUTO GENERATE ACCOUNT NUMBER
 // ======================
-userSchema.pre("save", function (next) {
+userSchema.pre("save", function () {
   if (!this.accountNumber) {
     this.accountNumber =
       "TB" + Math.floor(1000000000 + Math.random() * 9000000000);
   }
-  next();
 });
 
 // ======================
-// HASH PASSWORD
+// HASH PASSWORD BEFORE SAVE
 // ======================
-userSchema.pre("save", async function (next) {
-  try {
-    if (!this.isModified("password")) return next();
+userSchema.pre("save", async function () {
+  if (!this.isModified("password")) return;
 
-    this.password = await bcrypt.hash(this.password, 10);
-    next();
-  } catch (err) {
-    next(err);
-  }
+  this.password = await bcrypt.hash(this.password, 10);
 });
 
 // ======================
 // COMPARE PASSWORD
 // ======================
 userSchema.methods.comparePassword = async function (password) {
-  return await bcrypt.compare(password, this.password);
+  return bcrypt.compare(password, this.password);
 };
-
 // ======================
 // REMOVE PASSWORD FROM JSON OUTPUT
 // ======================
