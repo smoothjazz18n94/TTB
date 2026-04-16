@@ -1,6 +1,9 @@
 const mongoose = require("mongoose");
 const bcrypt = require("bcryptjs");
 
+// ======================
+// USER SCHEMA
+// ======================
 const userSchema = new mongoose.Schema(
   {
     name: {
@@ -31,6 +34,7 @@ const userSchema = new mongoose.Schema(
     balance: {
       type: Number,
       default: 0,
+      min: 0,
     },
 
     isFrozen: {
@@ -62,7 +66,7 @@ const userSchema = new mongoose.Schema(
 userSchema.pre("save", function (next) {
   if (!this.accountNumber) {
     this.accountNumber =
-      "TB" + Math.floor(100000000 + Math.random() * 900000000);
+      "TB" + Math.floor(1000000000 + Math.random() * 9000000000);
   }
   next();
 });
@@ -71,21 +75,33 @@ userSchema.pre("save", function (next) {
 // HASH PASSWORD
 // ======================
 userSchema.pre("save", async function (next) {
-  if (!this.isModified("password")) return next();
+  try {
+    if (!this.isModified("password")) return next();
 
-  const salt = await bcrypt.genSalt(10);
-  this.password = await bcrypt.hash(this.password, salt);
-  next();
+    this.password = await bcrypt.hash(this.password, 10);
+    next();
+  } catch (err) {
+    next(err);
+  }
 });
 
 // ======================
 // COMPARE PASSWORD
 // ======================
-userSchema.methods.comparePassword = async function (enteredPassword) {
-  return await bcrypt.compare(enteredPassword, this.password);
+userSchema.methods.comparePassword = async function (password) {
+  return await bcrypt.compare(password, this.password);
 };
 
 // ======================
-// EXPORT MODEL (CRITICAL FIX)
+// REMOVE PASSWORD FROM JSON OUTPUT
+// ======================
+userSchema.methods.toJSON = function () {
+  const user = this.toObject();
+  delete user.password;
+  return user;
+};
+
+// ======================
+// EXPORT MODEL
 // ======================
 module.exports = mongoose.model("User", userSchema);
