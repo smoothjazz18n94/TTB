@@ -3,208 +3,214 @@
 <head>
   <meta charset="UTF-8" />
   <meta name="viewport" content="width=device-width, initial-scale=1.0"/>
-  <title>The Trust Bank — Dashboard</title>
-  <link rel="stylesheet" href="dashboard.css"></link>
+  <title>Trust Bank — Dashboard</title>
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+  <link href="https://fonts.googleapis.com/css2?family=DM+Sans:ital,opsz,wght@0,9..40,300;0,9..40,400;0,9..40,500;0,9..40,600;0,9..40,700;1,9..40,400&family=DM+Mono:wght@400;500&display=swap" rel="stylesheet">
+  <link rel="stylesheet" href="dashboard.css">
 </head>
 <body>
 
-<!-- Loading screen -->
-<div class="loading-overlay" id="loadingScreen">
-  <div class="logo">🏦</div>
-  <p>Loading your account...</p>
-</div>
+  <!-- LOADING -->
+  <div id="loadingScreen" class="loading-screen">
+    <div class="loading-inner">
+      <div class="loading-brand">
+        <span class="brand-mark">◈</span>
+        <span class="brand-name">Trust Bank</span>
+      </div>
+      <div class="loading-track"><div class="loading-fill"></div></div>
+      <p class="loading-sub">Securing your session…</p>
+    </div>
+  </div>
 
-<div class="app" id="appContent" style="display:none">
+  <!-- APP -->
+  <div id="appContent" class="app" hidden>
 
-  <!-- HEADER -->
-  <div class="header">
-    <div class="header-left">
-      <div class="avatar" id="avatarEl">TB</div>
-      <div class="header-text">
-        <h2 id="welcome">Welcome back</h2>
-        <p id="accountNumber">Loading...</p>
+    <!-- HEADER -->
+    <header class="header" id="mainHeader">
+      <div class="header-left">
+        <div class="avatar" id="avatarEl">TB</div>
+        <div class="header-meta">
+          <p class="header-greeting" id="welcome">Welcome back</p>
+          <p class="header-acc"   id="accountNumber">Loading…</p>
+        </div>
+      </div>
+      <div class="header-right">
+        <button class="hdr-btn" id="themeBtn"  title="Toggle theme">◐</button>
+        <button class="hdr-btn" id="notifBtn"  title="Notifications"><span class="ndot" id="notifDot" hidden></span>🔔</button>
+        <button class="hdr-btn exit" id="logoutBtn" title="Log out">⎋</button>
+      </div>
+    </header>
+
+    <!-- BALANCE CARD -->
+    <section class="card-section">
+      <div class="balance-card" id="balanceCard">
+        <div class="card-shimmer"></div>
+        <div class="card-top-row">
+          <div>
+            <p class="bal-label">Available Balance</p>
+            <p class="bal-amount" id="balanceEl"><span>₵ 0.00</span></p>
+          </div>
+          <button class="eye-btn" id="eyeBtn" title="Hide balance">👁</button>
+        </div>
+        <div class="card-bottom-row">
+          <span class="card-pan">•••• •••• •••• <span id="lastFour">----</span></span>
+          <div class="card-badges">
+            <span class="frozen-badge" id="freezeBadge">❄ Frozen</span>
+            <span class="card-mark">◈ TRUST</span>
+          </div>
+        </div>
+      </div>
+    </section>
+
+    <!-- QUICK ACTIONS -->
+    <section class="quick-section">
+      <button class="quick-btn" onclick="openSheet('deposit')">
+        <span class="qb-icon">＋</span><span class="qb-label">Deposit</span>
+      </button>
+      <button class="quick-btn" onclick="openSheet('transfer')">
+        <span class="qb-icon">↗</span><span class="qb-label">Send</span>
+      </button>
+      <button class="quick-btn" id="freezeBtn" onclick="toggleFreeze()">
+        <span class="qb-icon" id="freezeIcon">❄</span><span class="qb-label" id="freezeLabel">Freeze</span>
+      </button>
+      <button class="quick-btn" onclick="openSheet('limit')">
+        <span class="qb-icon">⊘</span><span class="qb-label">Limit</span>
+      </button>
+    </section>
+
+    <!-- STATS -->
+    <section class="stats-section">
+      <div class="stat-tile green">
+        <p class="st-label">Money In</p>
+        <p class="st-val" id="totalIn">₵ 0.00</p>
+        <span class="st-bg-icon">↓</span>
+      </div>
+      <div class="stat-tile red">
+        <p class="st-label">Money Out</p>
+        <p class="st-val" id="totalOut">₵ 0.00</p>
+        <span class="st-bg-icon">↑</span>
+      </div>
+    </section>
+
+    <!-- CHART -->
+    <section class="content-section">
+      <div class="sec-head">
+        <h2 class="sec-title">Spending Overview</h2>
+        <div class="tab-group">
+          <button class="tab active" onclick="switchChart('doughnut',this)">Breakdown</button>
+          <button class="tab" onclick="switchChart('bar',this)">7 Days</button>
+        </div>
+      </div>
+      <div class="chart-card">
+        <div id="chartWrap" class="chart-inner"><canvas id="chartCanvas"></canvas></div>
+      </div>
+    </section>
+
+    <!-- TRANSACTIONS -->
+    <section class="content-section" style="padding-bottom:100px">
+      <div class="sec-head">
+        <h2 class="sec-title">Recent Transactions</h2>
+        <button class="ghost-link" onclick="notify('Full history coming soon','info')">See all →</button>
+      </div>
+      <div class="tx-list" id="historyList">
+        <div class="empty-state">
+          <div class="empty-glyph">◈</div>
+          <p>No transactions yet</p>
+          <small>Your activity will appear here</small>
+        </div>
+      </div>
+    </section>
+
+  </div>
+
+  <!-- BOTTOM NAV -->
+  <nav class="bottom-nav">
+    <button class="nav-item active"><span class="ni-icon">⌂</span><span class="ni-lbl">Home</span></button>
+    <button class="nav-item" onclick="openSheet('transfer')"><span class="ni-icon">↗</span><span class="ni-lbl">Send</span></button>
+    <button class="nav-item" onclick="openSheet('deposit')"><span class="ni-icon">＋</span><span class="ni-lbl">Add</span></button>
+    <button class="nav-item" onclick="notify('Profile coming soon','info')"><span class="ni-icon">◉</span><span class="ni-lbl">Profile</span></button>
+  </nav>
+
+  <!-- ── SHEETS ── -->
+
+  <!-- Deposit -->
+  <div class="overlay" id="depositOverlay" onclick="closeOnBackdrop(event,'depositOverlay')">
+    <div class="sheet">
+      <div class="sheet-handle"></div>
+      <h3 class="sheet-heading">Add Money</h3>
+      <div class="field"><label>Amount (₵)</label><input type="number" id="depositAmount" placeholder="0.00" min="0.01" inputmode="decimal"/></div>
+      <div class="field"><label>Category</label>
+        <select id="depositCategory">
+          <option value="general">General</option>
+          <option value="savings">Savings</option>
+          <option value="bills">Bills</option>
+        </select>
+      </div>
+      <div class="field"><label>Note <em>(optional)</em></label><input type="text" id="depositNote" placeholder="e.g. Monthly salary" maxlength="100"/></div>
+      <div class="sheet-btns">
+        <button class="s-cancel" onclick="closeSheet('depositOverlay')">Cancel</button>
+        <button class="s-confirm" id="depositBtn" onclick="doDeposit()">Deposit</button>
       </div>
     </div>
-    <div class="header-actions">
-      <div class="icon-btn" id="toggleTheme" title="Toggle theme">🌙</div>
-      <div class="icon-btn" id="logoutBtn" title="Logout">🚪</div>
-    </div>
   </div>
 
-  <!-- BALANCE CARD -->
-  <div class="balance-card">
-    <p class="balance-label">Available Balance</p>
-    <div class="balance-amount" id="balanceEl">
-      <span>₵ 0.00</span>
-    </div>
-    <div class="card-row">
-      <p class="card-number">•••• •••• •••• <span id="lastFour">----</span></p>
-      <span class="freeze-badge" id="freezeBadge">❄️ Frozen</span>
-    </div>
-  </div>
-
-  <!-- QUICK ACTIONS -->
-  <div class="quick-actions">
-    <div class="action-btn" onclick="openSheet('deposit')">
-      <div class="action-icon">💰</div>
-      <span class="action-label">Deposit</span>
-    </div>
-    <div class="action-btn" onclick="openSheet('transfer')">
-      <div class="action-icon">💸</div>
-      <span class="action-label">Send</span>
-    </div>
-    <div class="action-btn" onclick="toggleFreeze()">
-      <div class="action-icon" id="freezeIcon">❄️</div>
-      <span class="action-label" id="freezeLabel">Freeze</span>
-    </div>
-    <div class="action-btn" onclick="openSheet('limit')">
-      <div class="action-icon">🔒</div>
-      <span class="action-label">Limit</span>
-    </div>
-  </div>
-
-  <!-- STATS -->
-  <div class="stats-row">
-    <div class="stat-card">
-      <p class="stat-label">Money in</p>
-      <p class="stat-value income" id="totalIn">₵ 0.00</p>
-    </div>
-    <div class="stat-card">
-      <p class="stat-label">Money out</p>
-      <p class="stat-value expense" id="totalOut">₵ 0.00</p>
-    </div>
-  </div>
-
-  <!-- CHART -->
-  <div class="section">
-    <div class="section-header">
-      <h3>Spending Overview</h3>
-    </div>
-    <div class="chart-card">
-      <canvas id="chart"></canvas>
-    </div>
-  </div>
-
-  <!-- TRANSACTIONS -->
-  <div class="section">
-    <div class="section-header">
-      <h3>Recent Transactions</h3>
-    </div>
-    <div class="tx-list" id="historyList">
-      <div class="empty-state">
-        <div>💳</div>
-        <p>No transactions yet</p>
+  <!-- Transfer -->
+  <div class="overlay" id="transferOverlay" onclick="closeOnBackdrop(event,'transferOverlay')">
+    <div class="sheet">
+      <div class="sheet-handle"></div>
+      <h3 class="sheet-heading">Send Money</h3>
+      <div class="field"><label>Recipient Account Number</label><input type="text" id="transferReceiver" placeholder="10-digit account number" inputmode="numeric"/></div>
+      <div class="field"><label>Amount (₵)</label><input type="number" id="transferAmount" placeholder="0.00" min="0.01" inputmode="decimal"/></div>
+      <div class="field"><label>Category</label>
+        <select id="transferCategory">
+          <option value="general">General</option>
+          <option value="food">Food & Dining</option>
+          <option value="transport">Transport</option>
+          <option value="shopping">Shopping</option>
+          <option value="bills">Bills & Utilities</option>
+          <option value="entertainment">Entertainment</option>
+          <option value="health">Health</option>
+        </select>
+      </div>
+      <div class="field"><label>Note <em>(optional)</em></label><input type="text" id="transferNote" placeholder="e.g. Rent payment" maxlength="100"/></div>
+      <div class="sheet-btns">
+        <button class="s-cancel" onclick="closeSheet('transferOverlay')">Cancel</button>
+        <button class="s-confirm" id="transferBtn" onclick="doTransfer()">Send Money</button>
       </div>
     </div>
   </div>
 
-</div>
-
-<!-- BOTTOM NAV -->
-<div class="bottom-nav">
-  <div class="nav-item active">
-    <span class="nav-icon">🏠</span>
-    <span class="nav-label">Home</span>
-  </div>
-  <div class="nav-item" onclick="openSheet('transfer')">
-    <span class="nav-icon">↗️</span>
-    <span class="nav-label">Send</span>
-  </div>
-  <div class="nav-item" onclick="openSheet('deposit')">
-    <span class="nav-icon">➕</span>
-    <span class="nav-label">Add</span>
-  </div>
-  <div class="nav-item">
-    <span class="nav-icon">👤</span>
-    <span class="nav-label">Profile</span>
-  </div>
-</div>
-
-<!-- DEPOSIT SHEET -->
-<div class="overlay" id="depositOverlay" onclick="closeOnBackdrop(event, 'depositOverlay')">
-  <div class="sheet">
-    <div class="sheet-handle"></div>
-    <h3>💰 Add Money</h3>
-    <div class="sheet-field">
-      <label>Amount (₵)</label>
-      <input type="number" id="depositAmount" placeholder="0.00" min="0.01" />
-    </div>
-    <div class="sheet-field">
-      <label>Category</label>
-      <select id="depositCategory">
-        <option value="general">General</option>
-        <option value="savings">Savings</option>
-        <option value="bills">Bills</option>
-      </select>
-    </div>
-    <div class="sheet-field">
-      <label>Note (optional)</label>
-      <input type="text" id="depositNote" placeholder="e.g. Monthly salary" maxlength="100" />
-    </div>
-    <div class="sheet-actions">
-      <button class="btn-secondary" onclick="closeSheet('depositOverlay')">Cancel</button>
-      <button class="btn-primary" id="depositBtn" onclick="deposit()">Deposit</button>
+  <!-- Limit -->
+  <div class="overlay" id="limitOverlay" onclick="closeOnBackdrop(event,'limitOverlay')">
+    <div class="sheet">
+      <div class="sheet-handle"></div>
+      <h3 class="sheet-heading">Transaction Limit</h3>
+      <p class="sheet-desc">Cap the maximum amount allowed per single transaction.</p>
+      <div class="field"><label>Limit (₵)</label><input type="number" id="limitAmount" placeholder="e.g. 5000" min="1" inputmode="numeric"/></div>
+      <div class="sheet-btns">
+        <button class="s-cancel" onclick="closeSheet('limitOverlay')">Cancel</button>
+        <button class="s-confirm" onclick="doSetLimit()">Save</button>
+      </div>
     </div>
   </div>
-</div>
 
-<!-- TRANSFER SHEET -->
-<div class="overlay" id="transferOverlay" onclick="closeOnBackdrop(event, 'transferOverlay')">
-  <div class="sheet">
-    <div class="sheet-handle"></div>
-    <h3>💸 Send Money</h3>
-    <div class="sheet-field">
-      <label>Recipient Account Number</label>
-      <input type="text" id="transferReceiver" placeholder="10-digit account number" />
-    </div>
-    <div class="sheet-field">
-      <label>Amount (₵)</label>
-      <input type="number" id="transferAmount" placeholder="0.00" min="0.01" />
-    </div>
-    <div class="sheet-field">
-      <label>Category</label>
-      <select id="transferCategory">
-        <option value="general">General</option>
-        <option value="food">Food</option>
-        <option value="transport">Transport</option>
-        <option value="shopping">Shopping</option>
-        <option value="bills">Bills</option>
-        <option value="entertainment">Entertainment</option>
-        <option value="health">Health</option>
-      </select>
-    </div>
-    <div class="sheet-field">
-      <label>Note (optional)</label>
-      <input type="text" id="transferNote" placeholder="e.g. Rent payment" maxlength="100" />
-    </div>
-    <div class="sheet-actions">
-      <button class="btn-secondary" onclick="closeSheet('transferOverlay')">Cancel</button>
-      <button class="btn-primary" id="transferBtn" onclick="transfer()">Send Money</button>
+  <!-- TX Detail -->
+  <div class="overlay" id="txDetailOverlay" onclick="closeOnBackdrop(event,'txDetailOverlay')">
+    <div class="sheet">
+      <div class="sheet-handle"></div>
+      <h3 class="sheet-heading" id="txDetailTitle">Details</h3>
+      <div id="txDetailBody"></div>
+      <div class="sheet-btns" style="margin-top:24px">
+        <button class="s-cancel" style="flex:1" onclick="closeSheet('txDetailOverlay')">Close</button>
+      </div>
     </div>
   </div>
-</div>
 
-<!-- LIMIT SHEET -->
-<div class="overlay" id="limitOverlay" onclick="closeOnBackdrop(event, 'limitOverlay')">
-  <div class="sheet">
-    <div class="sheet-handle"></div>
-    <h3>🔒 Transaction Limit</h3>
-    <p style="color:var(--muted);font-size:13px;margin-bottom:16px;">Set the maximum amount allowed per transaction.</p>
-    <div class="sheet-field">
-      <label>Limit (₵)</label>
-      <input type="number" id="limitAmount" placeholder="e.g. 5000" min="1" />
-    </div>
-    <div class="sheet-actions">
-      <button class="btn-secondary" onclick="closeSheet('limitOverlay')">Cancel</button>
-      <button class="btn-primary" onclick="setLimit()">Save Limit</button>
-    </div>
-  </div>
-</div>
+  <!-- TOAST -->
+  <div id="toast" role="status" aria-live="polite"></div>
 
-<!-- TOAST -->
-<div id="toast"></div>
-
-<script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
-
+  <script src="https://cdn.jsdelivr.net/npm/chart.js@4.4.3/dist/chart.umd.min.js"></script>
+  <script src="dashboard.js"></script>
 </body>
 </html>
