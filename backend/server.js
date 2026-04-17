@@ -48,11 +48,6 @@ app.use(express.json());
 app.use("/api/auth", authRoutes);
 app.use("/api/transactions", transactionRoutes);
 
-
-
-const cardRoutes = require("./routes/cards");
-const virtualRoutes = require("./routes/virtualAccounts");
-
 app.use("/api/cards", cardRoutes);
 app.use("/api/virtual-accounts", virtualRoutes);
 
