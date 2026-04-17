@@ -175,6 +175,73 @@ async function loadTransactions() {
   }
 }
 
+
+// ======================
+// LOAD CARDS
+// ======================
+async function loadCards() {
+  try {
+    const res = await fetch(`${BASE_URL}/api/cards`, {
+      headers: { Authorization: `Bearer ${token}` },
+    });
+
+    const { cards = [] } = await res.json();
+
+    console.log("💳 Cards:", cards);
+
+    const el = document.getElementById("cardsList");
+
+    if (!cards.length) {
+      el.innerHTML = "<p>No cards yet</p>";
+      return;
+    }
+
+    el.innerHTML = cards.map(card => `
+      <div class="card-box">
+        <p>**** ${card.cardNumber.slice(-4)}</p>
+        <small>Expiry: ${card.expiry}</small>
+      </div>
+    `).join("");
+
+  } catch (err) {
+    console.error("Cards error:", err);
+  }
+}
+
+
+// ======================
+// LOAD VIRTUAL ACCOUNTS
+// ======================
+async function loadVirtualAccounts() {
+  try {
+    const res = await fetch(`${BASE_URL}/api/virtual-accounts`, {
+      headers: { Authorization: `Bearer ${token}` },
+    });
+
+    const { accounts = [] } = await res.json();
+
+    console.log("🏦 Virtual Accounts:", accounts);
+
+    const el = document.getElementById("vaList");
+
+    if (!accounts.length) {
+      el.innerHTML = "<p>No virtual accounts</p>";
+      return;
+    }
+
+    el.innerHTML = accounts.map(acc => `
+      <div class="va-box">
+        <p>${acc.name}</p>
+        <small>${acc.accountNumber}</small>
+      </div>
+    `).join("");
+
+  } catch (err) {
+    console.error("VA error:", err);
+  }
+}
+
+
 /* ═══════════════════════════════════════════
    RENDER TRANSACTION LIST
 ════════════════════════════════════════════ */

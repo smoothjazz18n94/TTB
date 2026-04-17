@@ -1,114 +1,120 @@
 /* RESET */
+
 * {
   margin: 0;
   padding: 0;
   box-sizing: border-box;
   font-family: "Segoe UI", sans-serif;
-}
+  }
 
 /* BODY */
 body {
-  background: #f4f7fb;
-  padding: 20px;
+background: #071a12;
+padding: 20px;
+color: #f5f7f6;
 }
 
 /* CONTAINER */
 .container {
-  max-width: 800px;
-  margin: auto;
+max-width: 800px;
+margin: auto;
 }
 
 /* HEADER */
 .header {
-  display: flex;
-  justify-content: space-between;
-  align-items: center;
-  margin-bottom: 20px;
+display: flex;
+justify-content: space-between;
+align-items: center;
+margin-bottom: 20px;
 }
 
 /* WELCOME */
 #welcome {
-  color: #1e3a8a;
+color: #d4af37;
 }
 
 /* CARD */
 .card {
-  background: white;
-  padding: 20px;
-  border-radius: 14px;
-  margin-bottom: 15px;
-  box-shadow: 0 8px 25px rgba(0,0,0,0.05);
+background: #0c2419;
+padding: 20px;
+border-radius: 14px;
+margin-bottom: 15px;
+border: 1px solid rgba(212,175,55,0.20);
+box-shadow: 0 8px 25px rgba(0,0,0,0.25);
 }
 
 /* BALANCE CARD (SPECIAL) */
 .balance-card {
-  background: linear-gradient(135deg, #2563eb, #16a34a);
-  color: white;
+background: linear-gradient(135deg, #123526, #d4af37);
+color: #071a12;
 }
 
 .balance-card h3 {
-  color: #e0f2fe;
+color: #f1d87a;
 }
 
 #balance {
-  font-size: 28px;
-  font-weight: bold;
+font-size: 28px;
+font-weight: bold;
 }
 
 /* INPUTS */
 input {
-  width: 100%;
-  padding: 10px;
-  margin-top: 8px;
-  margin-bottom: 10px;
-  border-radius: 8px;
-  border: 1px solid #ddd;
+width: 100%;
+padding: 10px;
+margin-top: 8px;
+margin-bottom: 10px;
+border-radius: 8px;
+border: 1px solid rgba(212,175,55,0.20);
+background: #123526;
+color: #f5f7f6;
 }
 
 /* BUTTONS */
 button {
-  width: 100%;
-  padding: 10px;
-  border: none;
-  border-radius: 8px;
-  background: #2563eb;
-  color: white;
-  font-weight: bold;
-  cursor: pointer;
-  transition: 0.2s;
+width: 100%;
+padding: 10px;
+border: none;
+border-radius: 8px;
+background: linear-gradient(135deg, #d4af37, #f1d87a);
+color: #071a12;
+font-weight: bold;
+cursor: pointer;
+transition: 0.2s;
 }
 
 button:hover {
-  background: #1d4ed8;
+background: #d4af37;
 }
 
 /* LOGOUT */
 .logout {
-  width: auto;
-  background: #dc2626;
-  padding: 8px 15px;
+width: auto;
+background: #7a2c2c;
+color: #f5b5b5;
+padding: 8px 15px;
 }
 
 /* HISTORY */
 #historyList {
-  list-style: none;
-  margin-top: 10px;
+list-style: none;
+margin-top: 10px;
 }
 
 #historyList li {
-  display: flex;
-  justify-content: space-between;
-  padding: 10px;
-  border-bottom: 1px solid #eee;
+display: flex;
+justify-content: space-between;
+padding: 10px;
+border-bottom: 1px solid rgba(212,175,55,0.15);
 }
 
 /* TRANSACTION COLORS */
 .deposit {
-  color: #16a34a;
-  font-weight: bold;
+color: #d4af37;
+font-weight: bold;
 }
 
 .transfer {
-  color: #dc2626;
-  font-weight: bold;
+color: #f87171;
+font-weight: bold;
 }
