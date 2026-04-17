@@ -6,6 +6,8 @@ const cors = require("cors");
 
 const authRoutes = require("./routes/auth");
 const transactionRoutes = require("./routes/transactions");
+const cardRoutes = require("./routes/cards");
+const virtualRoutes = require("./routes/virtualAccounts");
 
 const app = express();
 
@@ -45,6 +47,14 @@ app.use(express.json());
 // ======================
 app.use("/api/auth", authRoutes);
 app.use("/api/transactions", transactionRoutes);
+
+
+
+const cardRoutes = require("./routes/cards");
+const virtualRoutes = require("./routes/virtualAccounts");
+
+app.use("/api/cards", cardRoutes);
+app.use("/api/virtual-accounts", virtualRoutes);
 
 // HEALTH CHECK
 app.get("/", (req, res) => {

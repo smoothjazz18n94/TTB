@@ -1,9 +1,6 @@
 const mongoose = require("mongoose");
 const bcrypt = require("bcryptjs");
 
-// ======================
-// USER SCHEMA
-// ======================
 const userSchema = new mongoose.Schema(
   {
     name: {
@@ -56,13 +53,31 @@ const userSchema = new mongoose.Schema(
       type: Boolean,
       default: true,
     },
+
+    // 💳 CARDS
+    cards: [
+      {
+        cardNumber: String,
+        expiry: String,
+        cvv: String,
+        balance: { type: Number, default: 0 },
+        isActive: { type: Boolean, default: true },
+      },
+    ],
+
+    // 🏦 VIRTUAL ACCOUNTS
+    virtualAccounts: [
+      {
+        name: String,
+        accountNumber: String,
+        balance: { type: Number, default: 0 },
+      },
+    ],
   },
   { timestamps: true }
 );
 
-// ======================
-// AUTO GENERATE ACCOUNT NUMBER
-// ======================
+// AUTO ACCOUNT NUMBER
 userSchema.pre("save", function () {
   if (!this.accountNumber) {
     this.accountNumber =
@@ -70,31 +85,22 @@ userSchema.pre("save", function () {
   }
 });
 
-// ======================
-// HASH PASSWORD BEFORE SAVE
-// ======================
+// HASH PASSWORD
 userSchema.pre("save", async function () {
   if (!this.isModified("password")) return;
-
   this.password = await bcrypt.hash(this.password, 10);
 });
 
-// ======================
 // COMPARE PASSWORD
-// ======================
 userSchema.methods.comparePassword = async function (password) {
   return bcrypt.compare(password, this.password);
 };
-// ======================
-// REMOVE PASSWORD FROM JSON OUTPUT
-// ======================
+
+// REMOVE PASSWORD FROM RESPONSE
 userSchema.methods.toJSON = function () {
   const user = this.toObject();
   delete user.password;
   return user;
 };
 
-// ======================
-// EXPORT MODEL
-// ======================
 module.exports = mongoose.model("User", userSchema);
