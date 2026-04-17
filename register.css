@@ -1,174 +1,70 @@
-* { margin: 0; padding: 0; box-sizing: border-box; }
+/* REGISTER PAGE */
 
 body {
-font-family: 'Segoe UI', sans-serif;
-background: #071a12;
-color: #f5f7f6;
-min-height: 100vh;
-display: flex;
-align-items: center;
-justify-content: center;
+  margin: 0;
+  font-family: "DM Sans", sans-serif;
+  background: #0b1220;
+  color: #e6edf7;
 }
 
-.container {
-width: 100%;
-max-width: 400px;
-padding: 20px;
+.register-container {
+  height: 100vh;
+  display: flex;
+  align-items: center;
+  justify-content: center;
 }
 
-.logo {
-text-align: center;
-margin-bottom: 32px;
+.register-box {
+  width: 100%;
+  max-width: 380px;
+  background: #111a2e;
+  padding: 28px;
+  border-radius: 14px;
+  border: 1px solid #1c2d45;
 }
 
-.logo-icon {
-width: 60px;
-height: 60px;
-background: linear-gradient(135deg, #d4af37, #f1d87a);
-border-radius: 18px;
-display: flex;
-align-items: center;
-justify-content: center;
-font-size: 28px;
-margin: 0 auto 16px;
-color: #071a12;
+.register-box h2 {
+  text-align: center;
+  margin-bottom: 20px;
 }
 
-.logo h1 { font-size: 24px; font-weight: 700; letter-spacing: -0.5px; }
-
-.logo p {
-color: #9bb7aa;
-font-size: 14px;
-margin-top: 4px;
+.register-box input {
+  width: 100%;
+  padding: 12px;
+  margin-bottom: 14px;
+  border-radius: 8px;
+  border: 1px solid #1c2d45;
+  background: #0b1426;
+  color: white;
 }
 
-.card {
-background: #0c2419;
-border: 1px solid rgba(212,175,55,0.20);
-border-radius: 20px;
-padding: 32px;
+.register-box input:focus {
+  outline: none;
+  border-color: #7c5cf6;
 }
 
-.card h2 { font-size: 20px; font-weight: 600; margin-bottom: 6px; }
-
-.card .subtitle {
-color: #9bb7aa;
-font-size: 14px;
-margin-bottom: 28px;
+.register-box button {
+  width: 100%;
+  padding: 12px;
+  background: #7c5cf6;
+  border: none;
+  border-radius: 8px;
+  color: white;
+  font-weight: bold;
+  cursor: pointer;
 }
 
-.field { margin-bottom: 16px; }
-
-.field label {
-display: block;
-font-size: 13px;
-color: #9bb7aa;
-margin-bottom: 6px;
-font-weight: 500;
+.register-box button:hover {
+  opacity: 0.9;
 }
 
-.field input {
-width: 100%;
-background: #123526;
-border: 1px solid rgba(212,175,55,0.20);
-border-radius: 12px;
-padding: 12px 16px;
-color: #f5f7f6;
-font-size: 15px;
-outline: none;
-transition: border-color 0.2s;
+.register-box p {
+  text-align: center;
+  margin-top: 12px;
+  font-size: 14px;
 }
 
-.field input:focus { border-color: #d4af37; }
-
-.field input::placeholder { color: #5c7a6c; }
-
-.password-hint {
-font-size: 12px;
-color: #5c7a6c;
-margin-top: 5px;
+.register-box a {
+  color: #7c5cf6;
+  text-decoration: none;
 }
-
-.strength-bar {
-height: 4px;
-border-radius: 2px;
-background: #123526;
-margin-top: 8px;
-overflow: hidden;
-}
-
-.strength-fill {
-height: 100%;
-border-radius: 2px;
-transition: width 0.3s, background 0.3s;
-width: 0%;
-}
-
-.btn {
-width: 100%;
-padding: 14px;
-background: linear-gradient(135deg, #d4af37, #f1d87a);
-border: none;
-border-radius: 12px;
-color: #071a12;
-font-size: 15px;
-font-weight: 600;
-cursor: pointer;
-margin-top: 8px;
-transition: opacity 0.2s, transform 0.1s;
-}
-
-.btn:hover { opacity: 0.9; }
-.btn:active { transform: scale(0.98); }
-.btn:disabled { opacity: 0.5; cursor: not-allowed; }
-
-.error {
-background: #2a1414;
-border: 1px solid #7a2c2c;
-color: #f5b5b5;
-border-radius: 10px;
-padding: 10px 14px;
-font-size: 13px;
-margin-top: 12px;
-display: none;
-}
-
-.success {
-background: #123526;
-border: 1px solid rgba(212,175,55,0.25);
-color: #d1fae5;
-border-radius: 10px;
-padding: 10px 14px;
-font-size: 13px;
-margin-top: 12px;
-display: none;
-}
-
-.footer {
-text-align: center;
-margin-top: 20px;
-font-size: 14px;
-color: #9bb7aa;
-}
-
-.footer a {
-color: #d4af37;
-text-decoration: none;
-font-weight: 500;
-}
-
-.footer a:hover { text-decoration: underline; }
-
-.spinner {
-display: inline-block;
-width: 16px;
-height: 16px;
-border: 2px solid rgba(245,247,246,0.3);
-border-top-color: #f5f7f6;
-border-radius: 50%;
-animation: spin 0.7s linear infinite;
-vertical-align: middle;
-margin-right: 6px;
-}
-
-@keyframes spin { to { transform: rotate(360deg); } }
