@@ -1,0 +1,367 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8"/>
+  <meta name="viewport" content="width=device-width,initial-scale=1.0"/>
+  <title>Cards & Accounts — VaultGreen Bank</title>
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+  <link href="https://fonts.googleapis.com/css2?family=Syne:wght@400;600;700;800&family=DM+Sans:wght@300;400;500;600&family=DM+Mono:wght@400;500&display=swap" rel="stylesheet">
+  <link rel="stylesheet" href="cards.css"/>
+</head>
+<body>
+
+<!-- NOISE TEXTURE -->
+<div class="noise-layer"></div>
+
+<!-- ── TOP NAV ── -->
+<nav class="top-nav">
+  <a href="dashboard.html" class="nav-back">
+    <svg width="18" height="18" viewBox="0 0 18 18" fill="none">
+      <path d="M11 14L6 9l5-5" stroke="currentColor" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round"/>
+    </svg>
+    Dashboard
+  </a>
+  <div class="nav-brand">
+    <span class="brand-glyph">◈</span> VaultGreen
+  </div>
+  <div class="nav-actions">
+    <button class="nav-icon-btn" id="themeToggle" title="Toggle theme">◐</button>
+    <div class="nav-avatar" id="navAvatar">VG</div>
+  </div>
+</nav>
+
+<!-- ── PAGE HEADER ── -->
+<header class="page-header">
+  <div class="page-header-inner">
+    <div>
+      <p class="page-eyebrow">Financial Tools</p>
+      <h1 class="page-title">Cards & Accounts</h1>
+      <p class="page-sub">Manage your virtual cards and sub-accounts in one place.</p>
+    </div>
+    <div class="kyc-status-badge" id="kycBadge">
+      <span class="kyc-dot" id="kycDot"></span>
+      <span id="kycLabel">Checking KYC…</span>
+    </div>
+  </div>
+</header>
+
+<!-- ── TABS ── -->
+<div class="tab-bar">
+  <button class="tab active" data-tab="cards" onclick="switchTab('cards',this)">
+    <svg width="16" height="16" viewBox="0 0 16 16" fill="none"><rect x="1" y="3" width="14" height="10" rx="2" stroke="currentColor" stroke-width="1.3"/><path d="M1 7h14" stroke="currentColor" stroke-width="1.3"/></svg>
+    My Cards
+  </button>
+  <button class="tab" data-tab="accounts" onclick="switchTab('accounts',this)">
+    <svg width="16" height="16" viewBox="0 0 16 16" fill="none"><rect x="2" y="2" width="5" height="5" rx="1" stroke="currentColor" stroke-width="1.3"/><rect x="9" y="2" width="5" height="5" rx="1" stroke="currentColor" stroke-width="1.3"/><rect x="2" y="9" width="5" height="5" rx="1" stroke="currentColor" stroke-width="1.3"/><rect x="9" y="9" width="5" height="5" rx="1" stroke="currentColor" stroke-width="1.3"/></svg>
+    Virtual Accounts
+  </button>
+  <button class="tab" data-tab="kyc" onclick="switchTab('kyc',this)">
+    <svg width="16" height="16" viewBox="0 0 16 16" fill="none"><circle cx="8" cy="6" r="3" stroke="currentColor" stroke-width="1.3"/><path d="M2 14c0-3.314 2.686-5 6-5s6 1.686 6 5" stroke="currentColor" stroke-width="1.3" stroke-linecap="round"/></svg>
+    KYC Verification
+  </button>
+</div>
+
+<!-- ════════════════════════════════
+     TAB: CARDS
+════════════════════════════════ -->
+<section class="tab-panel" id="panel-cards">
+  <div class="panel-inner">
+
+    <!-- Card carousel -->
+    <div class="card-stage" id="cardStage">
+      <!-- Cards rendered by JS -->
+      <div class="card-empty-state" id="cardEmpty" hidden>
+        <div class="empty-icon">💳</div>
+        <p>No cards yet</p>
+        <span>Create your first virtual card below</span>
+      </div>
+    </div>
+
+    <!-- Card nav dots -->
+    <div class="card-dots" id="cardDots"></div>
+
+    <!-- Selected card detail -->
+    <div class="card-detail-strip" id="cardDetail" hidden>
+      <div class="cds-item">
+        <span class="cds-label">Status</span>
+        <span class="cds-val" id="cdStatus">—</span>
+      </div>
+      <div class="cds-divider"></div>
+      <div class="cds-item">
+        <span class="cds-label">Balance</span>
+        <span class="cds-val" id="cdBalance">—</span>
+      </div>
+      <div class="cds-divider"></div>
+      <div class="cds-item">
+        <span class="cds-label">Expiry</span>
+        <span class="cds-val" id="cdExpiry">—</span>
+      </div>
+      <div class="cds-divider"></div>
+      <div class="cds-item">
+        <button class="cds-action" id="cdToggle" onclick="toggleCard()">Freeze Card</button>
+      </div>
+    </div>
+
+    <!-- Actions -->
+    <div class="action-row">
+      <button class="action-btn primary" id="createCardBtn" onclick="createCard()">
+        <svg width="16" height="16" viewBox="0 0 16 16" fill="none"><path d="M8 3v10M3 8h10" stroke="currentColor" stroke-width="1.8" stroke-linecap="round"/></svg>
+        Generate New Card
+      </button>
+      <button class="action-btn ghost" onclick="revealCvv()" id="revealCvvBtn">
+        <svg width="16" height="16" viewBox="0 0 16 16" fill="none"><path d="M1 8s2.5-5 7-5 7 5 7 5-2.5 5-7 5S1 8 1 8z" stroke="currentColor" stroke-width="1.3"/><circle cx="8" cy="8" r="2" stroke="currentColor" stroke-width="1.3"/></svg>
+        Show CVV
+      </button>
+    </div>
+
+    <!-- KYC gate overlay for cards -->
+    <div class="kyc-gate" id="cardKycGate" hidden>
+      <div class="gate-icon">🔒</div>
+      <h3>KYC Required</h3>
+      <p>Complete identity verification to generate virtual cards.</p>
+      <button class="action-btn primary" onclick="switchTab('kyc', document.querySelector('[data-tab=kyc]'))">Complete KYC →</button>
+    </div>
+
+  </div>
+</section>
+
+<!-- ════════════════════════════════
+     TAB: VIRTUAL ACCOUNTS
+════════════════════════════════ -->
+<section class="tab-panel hidden" id="panel-accounts">
+  <div class="panel-inner">
+
+    <!-- Create VA form -->
+    <div class="va-create-form" id="vaCreateForm">
+      <div class="vcf-inner">
+        <div class="form-field">
+          <label for="vaName">Account Label</label>
+          <input type="text" id="vaName" placeholder="e.g. Savings, Rent, Business…" maxlength="30"/>
+        </div>
+        <button class="action-btn primary" onclick="createVirtualAccount()">
+          <svg width="16" height="16" viewBox="0 0 16 16" fill="none"><path d="M8 3v10M3 8h10" stroke="currentColor" stroke-width="1.8" stroke-linecap="round"/></svg>
+          Create Account
+        </button>
+      </div>
+    </div>
+
+    <!-- KYC gate for VA -->
+    <div class="kyc-gate" id="vaKycGate" hidden>
+      <div class="gate-icon">🔒</div>
+      <h3>KYC Required</h3>
+      <p>Verify your identity before opening virtual accounts.</p>
+      <button class="action-btn primary" onclick="switchTab('kyc', document.querySelector('[data-tab=kyc]'))">Complete KYC →</button>
+    </div>
+
+    <!-- Accounts grid -->
+    <div class="va-grid" id="vaGrid">
+      <div class="va-empty" id="vaEmpty" hidden>
+        <div class="empty-icon">🏦</div>
+        <p>No virtual accounts yet</p>
+        <span>Create your first account using the form above</span>
+      </div>
+    </div>
+
+  </div>
+</section>
+
+<!-- ════════════════════════════════
+     TAB: KYC
+════════════════════════════════ -->
+<section class="tab-panel hidden" id="panel-kyc">
+  <div class="panel-inner">
+    <div class="kyc-panel">
+
+      <!-- KYC Progress -->
+      <div class="kyc-progress-wrap">
+        <div class="kyc-steps-bar">
+          <div class="kyc-step-item" id="kstep-1">
+            <div class="ks-circle">1</div>
+            <span>Personal Info</span>
+          </div>
+          <div class="ks-connector" id="kconn-1"></div>
+          <div class="kyc-step-item" id="kstep-2">
+            <div class="ks-circle">2</div>
+            <span>Identity Doc</span>
+          </div>
+          <div class="ks-connector" id="kconn-2"></div>
+          <div class="kyc-step-item" id="kstep-3">
+            <div class="ks-circle">3</div>
+            <span>Selfie Check</span>
+          </div>
+          <div class="ks-connector" id="kconn-3"></div>
+          <div class="kyc-step-item" id="kstep-4">
+            <div class="ks-circle">✓</div>
+            <span>Verified</span>
+          </div>
+        </div>
+      </div>
+
+      <!-- KYC already approved -->
+      <div class="kyc-approved" id="kycApproved" hidden>
+        <div class="ka-icon">✅</div>
+        <h3>Identity Verified</h3>
+        <p>Your KYC is complete. You have full access to all features.</p>
+        <div class="ka-badges">
+          <span class="ka-badge">Cards ✓</span>
+          <span class="ka-badge">Virtual Accounts ✓</span>
+          <span class="ka-badge">International Transfers ✓</span>
+        </div>
+      </div>
+
+      <!-- KYC Step 1: Personal -->
+      <div class="kyc-step-panel active" id="kyc-step-1">
+        <h3 class="kyc-step-title">Personal Information</h3>
+        <p class="kyc-step-sub">Provide your legal name and date of birth as they appear on your ID.</p>
+        <div class="kyc-form">
+          <div class="form-row-2">
+            <div class="form-field">
+              <label>Legal First Name</label>
+              <input type="text" id="kFirstName" placeholder="Kwame" autocomplete="given-name"/>
+            </div>
+            <div class="form-field">
+              <label>Legal Last Name</label>
+              <input type="text" id="kLastName" placeholder="Asante" autocomplete="family-name"/>
+            </div>
+          </div>
+          <div class="form-row-2">
+            <div class="form-field">
+              <label>Date of Birth</label>
+              <input type="date" id="kDob"/>
+            </div>
+            <div class="form-field">
+              <label>Nationality</label>
+              <select id="kNationality">
+                <option value="">— Select —</option>
+                <option>Ghanaian</option><option>Nigerian</option><option>British</option>
+                <option>American</option><option>South African</option><option>Kenyan</option>
+                <option>Other</option>
+              </select>
+            </div>
+          </div>
+          <div class="form-field">
+            <label>Residential Address</label>
+            <input type="text" id="kAddress" placeholder="14 Liberation Road, Accra"/>
+          </div>
+          <div class="form-field">
+            <label>Phone Number</label>
+            <input type="tel" id="kPhone" placeholder="+233 20 000 0000" autocomplete="tel"/>
+          </div>
+          <button class="action-btn primary" style="width:100%;justify-content:center;margin-top:.5rem" onclick="kycNextStep(1)">
+            Continue →
+          </button>
+        </div>
+      </div>
+
+      <!-- KYC Step 2: Document -->
+      <div class="kyc-step-panel" id="kyc-step-2">
+        <h3 class="kyc-step-title">Identity Document</h3>
+        <p class="kyc-step-sub">Upload a clear photo of your government-issued ID.</p>
+        <div class="kyc-form">
+          <div class="form-field">
+            <label>Document Type</label>
+            <select id="kDocType">
+              <option value="">— Select —</option>
+              <option value="passport">International Passport</option>
+              <option value="national_id">National ID Card</option>
+              <option value="drivers">Driver's License</option>
+              <option value="voters">Voter's ID</option>
+            </select>
+          </div>
+          <div class="form-field">
+            <label>Document Number</label>
+            <input type="text" id="kDocNum" placeholder="GHA-000000000"/>
+          </div>
+
+          <!-- Document upload zones -->
+          <div class="doc-uploads">
+            <div class="doc-zone" id="docFront" onclick="triggerUpload('docFrontFile')">
+              <input type="file" id="docFrontFile" accept="image/*,.pdf" hidden onchange="previewDoc('docFront',this)"/>
+              <div class="dz-icon">📄</div>
+              <span class="dz-label">Front of document</span>
+              <span class="dz-hint">JPG, PNG or PDF · Max 5MB</span>
+              <div class="dz-preview" id="docFront-preview" hidden></div>
+            </div>
+            <div class="doc-zone" id="docBack" onclick="triggerUpload('docBackFile')">
+              <input type="file" id="docBackFile" accept="image/*,.pdf" hidden onchange="previewDoc('docBack',this)"/>
+              <div class="dz-icon">📄</div>
+              <span class="dz-label">Back of document</span>
+              <span class="dz-hint">JPG, PNG or PDF · Max 5MB</span>
+              <div class="dz-preview" id="docBack-preview" hidden></div>
+            </div>
+          </div>
+
+          <div class="kyc-step-btns">
+            <button class="action-btn ghost" onclick="kycPrevStep(2)">← Back</button>
+            <button class="action-btn primary" onclick="kycNextStep(2)">Continue →</button>
+          </div>
+        </div>
+      </div>
+
+      <!-- KYC Step 3: Selfie -->
+      <div class="kyc-step-panel" id="kyc-step-3">
+        <h3 class="kyc-step-title">Selfie Verification</h3>
+        <p class="kyc-step-sub">Take a clear selfie holding your ID document. Ensure good lighting.</p>
+        <div class="kyc-form">
+          <div class="selfie-zone" id="selfieZone" onclick="triggerUpload('selfieFile')">
+            <input type="file" id="selfieFile" accept="image/*" capture="user" hidden onchange="previewSelfie(this)"/>
+            <div class="sz-frame">
+              <div class="sz-oval"></div>
+              <div class="sz-corner tl"></div>
+              <div class="sz-corner tr"></div>
+              <div class="sz-corner bl"></div>
+              <div class="sz-corner br"></div>
+            </div>
+            <span class="sz-label">Tap to take selfie or upload photo</span>
+            <img id="selfiePreview" hidden style="position:absolute;inset:0;width:100%;height:100%;object-fit:cover;border-radius:16px;"/>
+          </div>
+
+          <div class="selfie-tips">
+            <div class="tip"><span>☀️</span> Good lighting</div>
+            <div class="tip"><span>👁</span> Look straight ahead</div>
+            <div class="tip"><span>🪪</span> Hold your ID clearly</div>
+          </div>
+
+          <div class="kyc-step-btns">
+            <button class="action-btn ghost" onclick="kycPrevStep(3)">← Back</button>
+            <button class="action-btn primary" id="submitKycBtn" onclick="submitKyc()">Submit for Review →</button>
+          </div>
+        </div>
+      </div>
+
+      <!-- KYC Pending Review -->
+      <div class="kyc-step-panel" id="kyc-pending" hidden>
+        <div class="kyc-pending-state">
+          <div class="pending-spinner"></div>
+          <h3>Under Review</h3>
+          <p>Your documents are being reviewed. This typically takes <strong>2–4 hours</strong>. We'll notify you once verified.</p>
+          <div class="pending-ref" id="pendingRef"></div>
+        </div>
+      </div>
+
+    </div><!-- /kyc-panel -->
+  </div>
+</section>
+
+<!-- ── TOAST ── -->
+<div id="toast" role="status" aria-live="polite"></div>
+
+<!-- ── CVV MODAL ── -->
+<div class="modal-overlay" id="cvvModal">
+  <div class="modal-box">
+    <button class="modal-close" onclick="closeModal('cvvModal')">✕</button>
+    <div class="modal-icon">🔐</div>
+    <h3>Card Security Code</h3>
+    <p>Never share your CVV with anyone.</p>
+    <div class="cvv-display" id="cvvDisplay">•••</div>
+    <div class="cvv-timer">
+      <div class="cvv-timer-bar" id="cvvTimerBar"></div>
+    </div>
+    <p style="font-size:.78rem;color:var(--muted);text-align:center">Hidden automatically in 10 seconds</p>
+  </div>
+</div>
+
+<script src="cards.js"></script>
+</body>
+</html>
