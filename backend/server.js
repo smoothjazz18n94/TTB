@@ -8,6 +8,7 @@ const authRoutes = require("./routes/auth");
 const transactionRoutes = require("./routes/transactions");
 const cardRoutes = require("./routes/cards");
 const virtualRoutes = require("./routes/virtualAccounts");
+const kycRoutes = require("./routes/kyc");
 
 const app = express();
 
