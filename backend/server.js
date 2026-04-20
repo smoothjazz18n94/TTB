@@ -53,6 +53,8 @@ app.use("/api/transactions", transactionRoutes);
 app.use("/api/cards", cardRoutes);
 app.use("/api/virtual-accounts", virtualRoutes);
 
+app.use("/api/kyc", kycRoutes);
+
 // HEALTH CHECK
 app.get("/", (req, res) => {
   res.send("API is running 🚀");
