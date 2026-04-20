@@ -18,6 +18,7 @@ const allowedOrigins = [
   "http://localhost:3000",
   "http://127.0.0.1:5500",
   "https://ttb-git-master-smoothjazz18n94s-projects.vercel.app",
+  "https://vaultgreenbank.vercel.app",
 ];
 
 app.use(
