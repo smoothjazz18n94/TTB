@@ -15,13 +15,15 @@ const app = express();
 // ======================
 // CORS CONFIG
 // ======================
-const allowedOrigins = [
-  "http://localhost:3000",
-  "http://127.0.0.1:5500",
-  "https://ttb-git-master-smoothjazz18n94s-projects.vercel.app",
-  "https://vaultgreenbank.vercel.app",
- "https://ttb-seven.vercel.app"
-];
+
+
+app.use(
+  cors({
+    origin: true, // allow all origins dynamically
+    credentials: true,
+  })
+);
+
 
 app.use(
   cors({
