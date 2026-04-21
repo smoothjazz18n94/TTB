@@ -8,9 +8,9 @@ router.post("/submit", authenticateToken, async (req, res) => {
   try {
     const user = await User.findById(req.user.userId);
 
+    user.kyc = req.body;
     user.kycStatus = "pending";
-    user.kycData = req.body;
-    user.kycReference = "VGK-" + Date.now();
+    user.kycReference = "VGK-" + Date.now().toString(36).toUpperCase();
 
     await user.save();
 
@@ -26,12 +26,12 @@ router.post("/submit", authenticateToken, async (req, res) => {
   }
 });
 
-/* ───────── GET STATUS ───────── */
+/* ───────── STATUS ───────── */
 router.get("/status", authenticateToken, async (req, res) => {
   const user = await User.findById(req.user.userId);
 
   res.json({
-    status: user.kycStatus,
+    status: user.kycStatus || "none",
     reference: user.kycReference
   });
 });
