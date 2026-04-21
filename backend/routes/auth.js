@@ -115,16 +115,15 @@ router.post(
       console.log("✅ Login successful");
 
       res.json({
-        message: "Login successful",
-        token,
-        user: {
-          id: user._id,
-          name: user.name,
-          email: user.email,
-          accountNumber: user.accountNumber,
-          balance: user.balance,
-        },
-      });
+  user: {
+    id: user._id,
+    name: user.name,
+    email: user.email,
+    accountNumber: user.accountNumber,
+    balance: user.balance,
+    kycStatus: user.kycStatus   // ✅ ADD THIS LINE
+  },
+});
     } catch (error) {
       console.log("❌ LOGIN FAILED");
       console.log("STACK:", error.stack);

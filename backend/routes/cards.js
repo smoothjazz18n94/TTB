@@ -3,7 +3,7 @@ const router = express.Router();
 const User = require("../models/User");
 const authenticateToken = require("../middleware/authenticateToken");
 
-/* ───────────── CREATE CARD ───────────── */
+/* ───────── CREATE CARD ───────── */
 router.post("/create", authenticateToken, async (req, res) => {
   try {
     const user = await User.findById(req.user.userId);
@@ -11,10 +11,9 @@ router.post("/create", authenticateToken, async (req, res) => {
     const newCard = {
       cardNumber: "5399 " + Math.floor(1000 + Math.random() * 9000),
       expiry: "12/28",
-      cvv: Math.floor(100 + Math.random() * 900),
+      cvv: Math.floor(100 + Math.random() * 900).toString(),
       balance: 0,
-      isActive: true,
-      createdAt: new Date(),
+      isActive: true
     };
 
     user.cards.push(newCard);
@@ -23,23 +22,22 @@ router.post("/create", authenticateToken, async (req, res) => {
     res.json({ card: newCard });
 
   } catch (err) {
-    console.error("CREATE CARD ERROR:", err);
+    console.error(err);
     res.status(500).json({ error: "Failed to create card" });
   }
 });
 
-/* ───────────── GET CARDS ───────────── */
+/* ───────── GET CARDS ───────── */
 router.get("/", authenticateToken, async (req, res) => {
   try {
     const user = await User.findById(req.user.userId);
     res.json({ cards: user.cards });
   } catch (err) {
-    console.error("GET CARDS ERROR:", err);
     res.status(500).json({ error: "Failed to fetch cards" });
   }
 });
 
-/* ───────────── TOGGLE CARD ───────────── */
+/* ───────── TOGGLE CARD ───────── */
 router.patch("/:cardId/toggle", authenticateToken, async (req, res) => {
   try {
     const user = await User.findById(req.user.userId);
@@ -50,13 +48,9 @@ router.patch("/:cardId/toggle", authenticateToken, async (req, res) => {
     card.isActive = !card.isActive;
     await user.save();
 
-    res.json({
-      cardId: card._id,
-      isActive: card.isActive,
-    });
+    res.json({ success: true, isActive: card.isActive });
 
   } catch (err) {
-    console.error("TOGGLE CARD ERROR:", err);
     res.status(500).json({ error: "Failed to toggle card" });
   }
 });
